@@ -1,0 +1,27 @@
+[
+    {
+        "code": "DRAFTER",
+        "name": "Drafter",
+        "description": "FP, Big FP, ESX"
+    },
+    {
+        "code": "TEAMLEAD",
+        "name": "Team Leader",
+        "description": "Team leader" 
+    },
+    {
+        "code": "MEMBER",
+        "name": "Member",
+        "description": "Any without role"
+    },
+    {
+        "code": "ADMIN",
+        "name": "Administrator",
+        "description": "DSPeople Administrator"
+    },
+    {
+        "code": "SUPERADMIN",
+        "name": "Super Administrator",
+        "description": "Admin of admins"
+    }
+]

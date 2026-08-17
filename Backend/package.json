@@ -5,6 +5,7 @@
   "main": "index.js",
   "type": "module",
   "dependencies": {
+    "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.9.0",
     "accepts": "^2.0.0",
     "agent-base": "^7.1.4",
@@ -103,6 +104,7 @@
     "is-property": "^1.0.2",
     "isexe": "^2.0.0",
     "jiti": "^2.7.0",
+    "jose": "^6.2.8",
     "json-bigint": "^1.0.0",
     "json-schema-traverse": "^1.0.0",
     "jsonwebtoken": "^9.0.3",
@@ -127,6 +129,7 @@
     "mysql2": "^3.15.3",
     "named-placeholders": "^1.1.6",
     "negotiator": "^1.0.0",
+    "node-cron": "^4.6.0",
     "node-domexception": "^1.0.0",
     "node-fetch": "^3.3.2",
     "object-assign": "^4.1.1",
@@ -139,6 +142,7 @@
     "path-to-regexp": "^8.4.2",
     "pathe": "^2.0.3",
     "perfect-debounce": "^2.1.0",
+    "pg-boss": "^12.27.0",
     "pkg-types": "^2.3.1",
     "postgres": "^3.4.7",
     "proper-lockfile": "^4.1.2",
@@ -184,16 +188,36 @@
     "web-streams-polyfill": "^3.3.3",
     "which": "^2.0.2",
     "wrappy": "^1.0.2",
+    "ws": "^8.21.3",
     "zeptomatch": "^2.1.0",
     "zod": "^4.4.3"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "postinstall": "prisma generate",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "db:seed": "tsx src/seed/seed.ts",
+    "postinstall": "prisma generate"
+  },
+  "prisma": {
+    "seed": "tsx src/seed/seed.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "prisma": "^7.9.0"
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.2.0",
+    "@types/node-cron": "^3.0.11",
+    "@types/pino": "^7.0.4",
+    "@types/ws": "^8.18.1",
+    "prisma": "^7.9.0",
+    "tsx": "^4.23.5",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.10"
   }
 }

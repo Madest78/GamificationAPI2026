@@ -11,3 +11,161 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  avatarUrl String?
+  googleId  String?  @unique
+  emplannerUid   String?  @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  roles           UserRole[]
+  specializations UserSpecialization[]
+  refreshTokens   RefreshToken[]
+  revokedTokens   RevokedToken[]
+  loginCodes      LoginCode[]
+  achievements    UserAchievement[]
+  sentKudos       KudosTransaction[] @relation("SentKudos")
+  receivedKudos   KudosTransaction[] @relation("ReceivedKudos")
+  kudosBalance    UserKudosBalance?
+  following       Follow[] @relation("Following")
+  followers       Follow[] @relation("Followers")
+}
+
+model Role {
+  id          String  @id @default(cuid())
+  code        String  @unique
+  name        String
+  description String?
+
+  users UserRole[]
+}
+
+model UserRole {
+  userId String
+  roleId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+}
+
+model Specialization {
+  id    String               @id @default(cuid())
+  code  String               @unique
+  name  String
+  users UserSpecialization[]
+}
+
+model UserSpecialization {
+  userId           String
+  specializationId String
+  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  specialization   Specialization @relation(fields: [specializationId], references: [id], onDelete: Cascade)
+
+  @@id([userId, specializationId])
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  userAgent String?
+  ip        String?
+}
+
+model RevokedToken {
+  id        String   @id @default(cuid())
+  jti       String   @unique
+  userId    String
+  revokedAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model LoginCode {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AchievementDef {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  name        String
+  description String?
+  icon        String?
+  condition   Json     // JSONLogic conditions
+  points      Int      @default(0)
+  isRecurring Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users UserAchievement[]
+}
+
+model UserAchievement {
+  id              String   @id @default(cuid())
+  userId          String
+  achievementDefId String
+  earnedAt        DateTime @default(now())
+  progress        Int      @default(0)
+
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievementDef AchievementDef @relation(fields: [achievementDefId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementDefId])
+}
+
+model KudosType {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  name        String
+  emoji       String
+  description String?
+  createdAt   DateTime @default(now())
+
+  transactions KudosTransaction[]
+}
+
+model KudosTransaction {
+  id           String   @id @default(cuid())
+  senderId     String
+  receiverId   String
+  kudosTypeId  String
+  message      String?
+  createdAt    DateTime @default(now())
+
+  sender     User        @relation("SentKudos", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver   User        @relation("ReceivedKudos", fields: [receiverId], references: [id], onDelete: Cascade)
+  kudosType  KudosType   @relation(fields: [kudosTypeId], references: [id], onDelete: Cascade)
+}
+
+model UserKudosBalance {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  balance   Int      @default(0)
+  lastReset DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Follow {
+  id          String   @id @default(cuid())
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+
+  follower  User @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("Followers", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+}

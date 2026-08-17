@@ -1,0 +1,12 @@
+import { UserDto, CreateUserDto, UpdateUserDto } from "./user.interface.js"
+
+export interface UserRepository {
+    findById(id: string): Promise<UserDto | null>
+    findByEmail(email: string): Promise<UserDto | null>
+    findByGoogleId(googleId: string): Promise<UserDto | null>
+    findByEmplannerUid(emplannerUid: string): Promise<UserDto | null>
+    create(data: CreateUserDto): Promise<UserDto>
+    update(id: string, data: UpdateUserDto): Promise<UserDto>
+    findRolesByUserId(userId: string): Promise<string[]>
+    findUserWithRoles(userId: string): Promise<{ id: string; email: string; roles: string[] } | null>
+}
