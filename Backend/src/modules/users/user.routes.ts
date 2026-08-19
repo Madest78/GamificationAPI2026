@@ -6,9 +6,9 @@ import { AuthRequest } from '../auth/auth.middleware.js';
 import { SlackSyncService } from '@/shared/slack/sync.js';
 
 const updateProfileSchema = z.object({
-    emplannerUid: z.string().regex(/^\d{2}-\d{7}$/).optional(),
-    slackId: z.string().optional(),
-    avatarUrl: z.string().url().optional(),
+    emplannerUid: z.string().regex(/^\d{2}-\d{7}$/).nullable().optional(),
+    slackId: z.string().nullable().optional(),
+    avatarUrl: z.string().url().nullable().optional(),
 });
 
 interface UserRouterDeps {
@@ -37,6 +37,11 @@ export function createUserRouter({ userRepo, verifyToken, requireAuth }: UserRou
         }
 
         res.json(user);
+    });
+
+    router.post('/reset-slack', async (req: AuthRequest, res: Response) => {
+        const user = await userRepo.update(req.user!.id, { slackId: null } as any);
+        res.json({ message: 'Slack ID cleared', user });
     });
 
     router.patch('/me', validate(updateProfileSchema), async (req: AuthRequest, res: Response) => {
