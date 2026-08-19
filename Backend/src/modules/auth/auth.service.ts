@@ -166,16 +166,19 @@ export class AuthService {
 
         // Автосинхронизация из Slack если не хватает полей
         if (!user.slackId || !user.avatarUrl) {
-            try {
-                const { SlackSyncService } = await import('@/shared/slack/sync.js');
-                const slackSync = new SlackSyncService(this.userRepo);
-                await slackSync.syncUserByEmail(user.email);
-                // Перезагружаем пользователя после синхронизации
-                const updatedUser = await this.userRepo.findById(userId);
-                if (updatedUser) return updatedUser;
-            } catch (error) {
-                // Если Slack недоступен - возвращаем как есть
-                console.error('Slack sync failed:', error);
+            const { shouldAttemptSync, recordSyncSuccess, recordSyncFailure } = await import('@/shared/syncCache.js');
+            if (shouldAttemptSync('slack', user.email)) {
+                try {
+                    const { SlackSyncService } = await import('@/shared/slack/sync.js');
+                    const slackSync = new SlackSyncService(this.userRepo);
+                    await slackSync.syncUserByEmail(user.email);
+                    recordSyncSuccess('slack', user.email);
+                    const updatedUser = await this.userRepo.findById(userId);
+                    if (updatedUser) return updatedUser;
+                } catch (error) {
+                    console.error('Slack sync failed:', error);
+                    recordSyncFailure('slack', user.email);
+                }
             }
         }
 
