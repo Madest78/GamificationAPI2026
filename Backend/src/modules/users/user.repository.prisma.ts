@@ -10,6 +10,7 @@ export class PrismaUserRepository implements UserRepository {
             name: user.name,
             avatarUrl: user.avatarUrl,
             emplannerUid: user.emplannerUid,
+            slackId: user.slackId,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
         }
@@ -45,6 +46,14 @@ export class PrismaUserRepository implements UserRepository {
     async findByEmplannerUid(emplannerUid: string): Promise<UserDto | null> {
         const user = await this.prisma.user.findUnique({
             where: {emplannerUid: emplannerUid}
+        });
+        if (!user) return null;
+        return this.toDto(user);
+    }
+
+    async findBySlackId(slackId: string): Promise<UserDto | null> {
+        const user = await this.prisma.user.findUnique({
+            where: {slackId: slackId}
         });
         if (!user) return null;
         return this.toDto(user);

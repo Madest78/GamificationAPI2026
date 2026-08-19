@@ -5,6 +5,7 @@ export interface UserRepository {
     findByEmail(email: string): Promise<UserDto | null>
     findByGoogleId(googleId: string): Promise<UserDto | null>
     findByEmplannerUid(emplannerUid: string): Promise<UserDto | null>
+    findBySlackId(slackId: string): Promise<UserDto | null>
     create(data: CreateUserDto): Promise<UserDto>
     update(id: string, data: UpdateUserDto): Promise<UserDto>
     findRolesByUserId(userId: string): Promise<string[]>

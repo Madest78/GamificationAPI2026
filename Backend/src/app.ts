@@ -19,6 +19,7 @@ import { createAchievementRouter } from './modules/achievements/achievement.rout
 import { createKudosRouter } from './modules/kudos/kudos.routes.js';
 import { createFeedRouter } from './modules/feed/feed.routes.js';
 import { createAdminRouter } from './modules/admin/admin.routes.js';
+import { createUserRouter } from './modules/users/user.routes.js';
 import { startScheduler, startWorkers, stopQueue, stopScheduler } from './shared/jobs/index.js';
 
 const app = express();
@@ -53,6 +54,7 @@ app.get('/api/health', (_req: Request, res: Response) => {
 
 // --- Routes ---
 app.use('/api/auth', createAuthRouter({ authService, verifyToken, requireAuth }));
+app.use('/api/users', createUserRouter({ userRepo, verifyToken, requireAuth }));
 app.use('/api/achievements', createAchievementRouter({ achievementService, verifyToken, requireAuth, requireRole }));
 app.use('/api/kudos', createKudosRouter({ kudosService, verifyToken, requireAuth }));
 app.use('/api/feed', createFeedRouter({ feedService, verifyToken, requireAuth }));

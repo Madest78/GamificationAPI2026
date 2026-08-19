@@ -6,6 +6,7 @@ export const createUserSchema = z.object({
     avatarUrl: z.string().optional(),
     googleId: z.string().optional(),
     emplannerUid: z.string().regex(/^\d{2}-\d{7}$/).optional(),
+    slackId: z.string().optional(),
 })
 
 export const updateUserSchema = createUserSchema.partial();
@@ -19,6 +20,7 @@ export interface UserDto {
     name: string | null;
     avatarUrl: string | null;
     emplannerUid: string | null;
+    slackId: string | null;
     createdAt: Date;
     updatedAt: Date;
 }
