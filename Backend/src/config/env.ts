@@ -12,7 +12,8 @@ const envSchema = z.object({
     GOOGLE_CALLBACK_URL: z.string().url(),
     FRONTEND_URL: z.string().url(),
     ALLOWED_DOMAINS: z.string().min(1),
-    LOG_LEVEL: z.enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal']).default('info')
+    LOG_LEVEL: z.enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal']).default('info'),
+    SLACK_BOT_TOKEN: z.string().min(1),
 })
 
 //Парсинг + экспорт

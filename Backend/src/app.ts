@@ -20,6 +20,7 @@ import { createKudosRouter } from './modules/kudos/kudos.routes.js';
 import { createFeedRouter } from './modules/feed/feed.routes.js';
 import { createAdminRouter } from './modules/admin/admin.routes.js';
 import { createUserRouter } from './modules/users/user.routes.js';
+import { createSyncRouter } from './modules/sync/sync.routes.js';
 import { startScheduler, startWorkers, stopQueue, stopScheduler } from './shared/jobs/index.js';
 
 const app = express();
@@ -59,6 +60,7 @@ app.use('/api/achievements', createAchievementRouter({ achievementService, verif
 app.use('/api/kudos', createKudosRouter({ kudosService, verifyToken, requireAuth }));
 app.use('/api/feed', createFeedRouter({ feedService, verifyToken, requireAuth }));
 app.use('/api/admin', createAdminRouter({ adminService, verifyToken, requireAuth, requireRole }));
+app.use('/api/sync', createSyncRouter({ userRepo, verifyToken, requireAuth, requireRole }));
 
 // --- 404 handler ---
 app.use((_req: Request, res: Response) => {
