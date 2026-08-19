@@ -10,7 +10,7 @@ const ACCESS_TOKEN_EXPIRY = '15m';
 const REFRESH_TOKEN_EXPIRY_DAYS = 30;
 
 interface GoogleUserInfo {
-    sub: string;
+    id: string;      // Google userinfo API uses "id", not "sub"
     email: string;
     name?: string;
     picture?: string;
@@ -90,7 +90,7 @@ export class AuthService {
         const googleUser = await userResponse.json() as GoogleUserInfo;
 
         // Ищем или создаём пользователя
-        let user = await this.userRepo.findByGoogleId(googleUser.sub);
+        let user = await this.userRepo.findByGoogleId(googleUser.id);
 
         if (!user) {
             // Проверяем по email
@@ -98,14 +98,14 @@ export class AuthService {
 
             if (user) {
                 // Обновляем googleId
-                user = await this.userRepo.update(user.id, { googleId: googleUser.sub } as any);
+                user = await this.userRepo.update(user.id, { googleId: googleUser.id } as any);
             } else {
                 // Создаём нового пользователя
                 user = await this.userRepo.create({
                     email: googleUser.email,
                     name: googleUser.name,
                     avatarUrl: googleUser.picture,
-                    googleId: googleUser.sub,
+                    googleId: googleUser.id,
                 });
             }
         }

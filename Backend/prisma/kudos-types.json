@@ -1,0 +1,50 @@
+[
+    {
+        "code": "THANKS",
+        "name": "Thanks",
+        "emoji": "🙏",
+        "description": "Благодарность за помощь"
+    },
+    {
+        "code": "GREAT_JOB",
+        "name": "Great Job",
+        "emoji": "🎯",
+        "description": "Отличная работа"
+    },
+    {
+        "code": "TEAMWORK",
+        "name": "Teamwork",
+        "emoji": "🤝",
+        "description": "Командная работа"
+    },
+    {
+        "code": "IDEA",
+        "name": "Great Idea",
+        "emoji": "💡",
+        "description": "Хорошая идея"
+    },
+    {
+        "code": "HELP",
+        "name": "Help",
+        "emoji": "🤲",
+        "description": "Помощь коллеге"
+    },
+    {
+        "code": "MENTORING",
+        "name": "Mentoring",
+        "emoji": "🎓",
+        "description": "Наставничество"
+    },
+    {
+        "code": "FAST",
+        "name": "Fast Delivery",
+        "emoji": "⚡",
+        "description": "Быстрая доставка"
+    },
+    {
+        "code": "QUALITY",
+        "name": "Quality",
+        "emoji": "⭐",
+        "description": "Высокое качество"
+    }
+]

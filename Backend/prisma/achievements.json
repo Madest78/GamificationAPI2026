@@ -1,0 +1,92 @@
+[
+    {
+        "code": "FIRST_ORDER",
+        "name": "First Order",
+        "description": "Выполни первый заказ",
+        "icon": "🎉",
+        "condition": {"ordersCompleted": {">=": 1}},
+        "points": 10,
+        "isRecurring": false
+    },
+    {
+        "code": "10_ORDERS",
+        "name": "10 Orders",
+        "description": "Выполни 10 заказов",
+        "icon": "📦",
+        "condition": {"ordersCompleted": {">=": 10}},
+        "points": 50,
+        "isRecurring": false
+    },
+    {
+        "code": "50_ORDERS",
+        "name": "50 Orders",
+        "description": "Выполни 50 заказов",
+        "icon": "🏆",
+        "condition": {"ordersCompleted": {">=": 50}},
+        "points": 200,
+        "isRecurring": false
+    },
+    {
+        "code": "100_ORDERS",
+        "name": "100 Orders",
+        "description": "Выполни 100 заказов",
+        "icon": "👑",
+        "condition": {"ordersCompleted": {">=": 100}},
+        "points": 500,
+        "isRecurring": false
+    },
+    {
+        "code": "PERFECT_SCORE",
+        "name": "Perfect Score",
+        "description": "Получи идеальную оценку",
+        "icon": "💯",
+        "condition": {"evaluation": {">=": 100}},
+        "points": 100,
+        "isRecurring": true
+    },
+    {
+        "code": "SPEED_DEMON",
+        "name": "Speed Demon",
+        "description": "Выполни заказ меньше чем за 4 часа",
+        "icon": "⚡",
+        "condition": {"avgDurationHours": {"<=": 4}},
+        "points": 75,
+        "isRecurring": false
+    },
+    {
+        "code": "TEAM_PLAYER",
+        "name": "Team Player",
+        "description": "Отправь 10 kudos коллегам",
+        "icon": "🤝",
+        "condition": {"kudosSent": {">=": 10}},
+        "points": 50,
+        "isRecurring": false
+    },
+    {
+        "code": "POPULAR",
+        "name": "Popular",
+        "description": "Получи 10 kudos от коллег",
+        "icon": "🌟",
+        "condition": {"kudosReceived": {">=": 10}},
+        "points": 50,
+        "isRecurring": false
+    },
+    {
+        "code": "MENTOR",
+        "name": "Mentor",
+        "description": "Помоги 5 новичкам",
+        "icon": "🎓",
+        "condition": {"menteesHelped": {">=": 5}},
+        "points": 100,
+        "isRecurring": false
+    },
+    {
+        "code": "STREAK_7",
+        "name": "7-Day Streak",
+        "description": "Работай 7 дней подряд",
+        "icon": "🔥",
+        "condition": {"workStreakDays": {">=": 7}},
+        "points": 30,
+        "isRecurring": true
+    }
+]

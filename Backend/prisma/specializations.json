@@ -1,0 +1,14 @@
+[
+    {
+        "code": "FP",
+        "name": "Floor Plan"
+    },
+    {
+        "code": "BIG_FP",
+        "name": "Big Floor Plan"
+    },
+    {
+        "code": "ESX",
+        "name": "ESX"
+    }
+]
