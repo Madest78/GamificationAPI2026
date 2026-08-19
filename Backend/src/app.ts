@@ -1,8 +1,11 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import { requestId, logger } from './shared/middleware/index.js';
 import { AppError } from './errors/AppErrors.js';
 import { prisma } from './shared/prisma.js';
+import { env } from './config/env.js';
 import { PrismaUserRepository } from './modules/users/user.repository.prisma.js';
 import { PrismaAuthRepository } from './modules/auth/auth.repository.prisma.js';
 import { PrismaAchievementRepository } from './modules/achievements/achievement.repository.prisma.js';
@@ -42,19 +45,55 @@ const kudosService = new KudosService(kudosRepo, userRepo);
 const feedService = new FeedService(userRepo, feedRepo);
 const adminService = new AdminService(userRepo, achievementRepo);
 
+// --- Security ---
+app.use(helmet());
+
+const allowedOrigins = env.ALLOWED_DOMAINS.split(',').map(d => `https://${d.trim()}`);
+allowedOrigins.push(env.FRONTEND_URL);
+
+app.use(cors({
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+}));
+
+// Rate limiting — общий лимит
+const generalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 минут
+    max: 100,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Too many requests, please try again later' },
+});
+
+// Rate limiting — для auth endpoints (строже)
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 минут
+    max: 20,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Too many auth attempts, please try again later' },
+});
+
+app.use(generalLimiter);
+
 // --- Middleware ---
-app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '256kb' }));
 app.use(requestId);
 app.use(logger);
 
-// --- Health endpoint ---
+// --- Health endpoint (без rate limit) ---
 app.get('/api/health', (_req: Request, res: Response) => {
     res.json({ status: 'ok' });
 });
 
 // --- Routes ---
-app.use('/api/auth', createAuthRouter({ authService, verifyToken, requireAuth }));
+app.use('/api/auth', authLimiter, createAuthRouter({ authService, verifyToken, requireAuth }));
 app.use('/api/users', createUserRouter({ userRepo, verifyToken, requireAuth }));
 app.use('/api/achievements', createAchievementRouter({ achievementService, verifyToken, requireAuth, requireRole }));
 app.use('/api/kudos', createKudosRouter({ kudosService, verifyToken, requireAuth }));
