@@ -163,6 +163,22 @@ export class AuthService {
         if (!user) {
             throw new UnauthorizedError('User not found');
         }
+
+        // Автосинхронизация из Slack если не хватает полей
+        if (!user.slackId || !user.avatarUrl) {
+            try {
+                const { SlackSyncService } = await import('@/shared/slack/sync.js');
+                const slackSync = new SlackSyncService(this.userRepo);
+                await slackSync.syncUserByEmail(user.email);
+                // Перезагружаем пользователя после синхронизации
+                const updatedUser = await this.userRepo.findById(userId);
+                if (updatedUser) return updatedUser;
+            } catch (error) {
+                // Если Slack недоступен - возвращаем как есть
+                console.error('Slack sync failed:', error);
+            }
+        }
+
         return user;
     }
 }
