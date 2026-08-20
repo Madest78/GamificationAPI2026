@@ -9,14 +9,12 @@ export const createUserSchema = z.object({
     extraId: z.string().regex(/^\d{2}-\d{7}$/).optional(),
     slackId: z.string().optional(),
     personalEmail: z.string().email().optional(),
-    emplannerAvailability: z.string().optional(),
     emplannerRoles: z.array(z.string()).optional(),
     emplannerTags: z.array(z.string()).optional(),
     emplannerCountry: z.string().optional(),
     emplannerCity: z.string().optional(),
     emplannerGender: z.string().optional(),
     emplannerFired: z.boolean().optional(),
-    emplannerTimeTracking: z.string().optional(),
     emplannerUtc: z.number().optional(),
     emplannerTeams: z.record(z.string(), z.unknown()).optional(),
     emplannerProductivity: z.record(z.string(), z.unknown()).optional(),
@@ -39,14 +37,12 @@ export interface UserDto {
     emplannerUid: string | null;
     extraId: string | null;
     slackId: string | null;
-    emplannerAvailability: string | null;
     emplannerRoles: string[] | null;
     emplannerTags: string[] | null;
     emplannerCountry: string | null;
     emplannerCity: string | null;
     emplannerGender: string | null;
     emplannerFired: boolean | null;
-    emplannerTimeTracking: string | null;
     emplannerUtc: number | null;
     emplannerTeams: Record<string, unknown> | null;
     emplannerProductivity: Record<string, unknown> | null;

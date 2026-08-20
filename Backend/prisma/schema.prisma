@@ -24,14 +24,12 @@ model User {
   slackId  String?  @unique
   
   // Emplanner metadata
-  emplannerAvailability String?   // ONLINE, OFFLINE, PAUSE
   emplannerRoles Json?            // ["DRAFTER", "SUPERVISOR", ...]
   emplannerTags Json?             // ["T9", "MANAGER", ...]
   emplannerCountry String?        // "Georgia"
   emplannerCity String?           // "Batumi"
   emplannerGender String?         // "MALE", "FEMALE"
   emplannerFired Boolean? @default(false)
-  emplannerTimeTracking String?   // START, STOP, PAUSE
   emplannerUtc Int?               // UTC offset in minutes
   emplannerTeams Json?            // memberTeams + leaderTeams
   emplannerProductivity Json?     // calculatedProductivityAverage
