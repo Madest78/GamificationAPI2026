@@ -91,7 +91,7 @@ export class EmplannerAdapter {
     async getUserByEmail(email: string): Promise<EmplannerUser | null> {
         const token = await this.getSessionToken();
 
-        const searchQuery = email.replace('@', '.@');
+        const searchQuery = email.split('@')[0];
         let pageIndex = 0;
         const pageSize = 50;
 
