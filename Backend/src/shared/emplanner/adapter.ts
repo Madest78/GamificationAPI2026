@@ -24,20 +24,23 @@ interface EmplannerApiResponse {
 
 export class EmplannerAdapter {
     private baseUrl: string;
-    private token: string;
+    private username: string;
+    private password: string;
 
     constructor() {
         this.baseUrl = env.EMPLANNER_API_URL;
-        this.token = env.EMPLANNER_TOKEN;
+        this.username = env.EMPLANNER_USERNAME;
+        this.password = env.EMPLANNER_PASSWORD;
     }
 
     async getUserByEmail(email: string): Promise<EmplannerUser | null> {
-        const url = `${this.baseUrl}/users?email=${encodeURIComponent(email)}`;
+        const searchEmail = email.replace('@', '.matusevich@emplanner.team');
+        const url = `${this.baseUrl}/rest/v3/user?p.pageSize=50&p.sortBy=firstName&p.order=asc&search=${searchEmail}&productionAccess=HAVE_ACCESS`;
 
         const response = await fetch(url, {
             method: 'GET',
             headers: {
-                'Authorization': `Bearer ${this.token}`,
+                'Authorization': `Basic ${Buffer.from(`${this.username}:${this.password}`).toString('base64')}`,
                 'Content-Type': 'application/json',
             },
         });
