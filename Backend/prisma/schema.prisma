@@ -15,12 +15,30 @@ datasource db {
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
+  personalEmail String?  // Gmail or other personal email from Emplanner
   name      String?
   avatarUrl String?
   googleId  String?  @unique
   emplannerUid String? @unique  // Emplanner internal ID (e.g. "631c58d75d8e0655c04c7cf2")
   extraId  String?  @unique     // Contract number from Emplanner extraId (e.g. "23-0003288")
   slackId  String?  @unique
+  
+  // Emplanner metadata
+  emplannerAvailability String?   // ONLINE, OFFLINE, PAUSE
+  emplannerRoles Json?            // ["DRAFTER", "SUPERVISOR", ...]
+  emplannerTags Json?             // ["T9", "MANAGER", ...]
+  emplannerCountry String?        // "Georgia"
+  emplannerCity String?           // "Batumi"
+  emplannerGender String?         // "MALE", "FEMALE"
+  emplannerFired Boolean? @default(false)
+  emplannerTimeTracking String?   // START, STOP, PAUSE
+  emplannerUtc Int?               // UTC offset in minutes
+  emplannerTeams Json?            // memberTeams + leaderTeams
+  emplannerProductivity Json?     // calculatedProductivityAverage
+  emplannerFeedbackUrl String?
+  emplannerHasOnlyTestLicenses Boolean?
+  emplannerIsVcs Boolean?
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

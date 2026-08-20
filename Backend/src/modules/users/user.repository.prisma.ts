@@ -7,11 +7,26 @@ export class PrismaUserRepository implements UserRepository {
         return {
             id: user.id,
             email: user.email,
+            personalEmail: user.personalEmail,
             name: user.name,
             avatarUrl: user.avatarUrl,
             emplannerUid: user.emplannerUid,
             extraId: user.extraId,
             slackId: user.slackId,
+            emplannerAvailability: user.emplannerAvailability,
+            emplannerRoles: user.emplannerRoles,
+            emplannerTags: user.emplannerTags,
+            emplannerCountry: user.emplannerCountry,
+            emplannerCity: user.emplannerCity,
+            emplannerGender: user.emplannerGender,
+            emplannerFired: user.emplannerFired,
+            emplannerTimeTracking: user.emplannerTimeTracking,
+            emplannerUtc: user.emplannerUtc,
+            emplannerTeams: user.emplannerTeams,
+            emplannerProductivity: user.emplannerProductivity,
+            emplannerFeedbackUrl: user.emplannerFeedbackUrl,
+            emplannerHasOnlyTestLicenses: user.emplannerHasOnlyTestLicenses,
+            emplannerIsVcs: user.emplannerIsVcs,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
         }
@@ -69,14 +84,16 @@ export class PrismaUserRepository implements UserRepository {
     }
 
     async create(data: CreateUserDto): Promise<UserDto> {
-        const user = await this.prisma.user.create({ data });
+        const user = await this.prisma.user.create({
+            data: data as any,
+        });
         return this.toDto(user)
     }
 
     async update(id: string, data: UpdateUserDto): Promise<UserDto> {
         const user = await this.prisma.user.update({
             where: {id},
-            data,
+            data: data as any,
         });
         return this.toDto(user)
     }

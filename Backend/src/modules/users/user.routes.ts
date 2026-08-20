@@ -12,6 +12,21 @@ const updateProfileSchema = z.object({
     extraId: z.string().regex(/^\d{2}-\d{7}$/).nullable().optional(),
     slackId: z.string().nullable().optional(),
     avatarUrl: z.string().url().nullable().optional(),
+    personalEmail: z.string().email().nullable().optional(),
+    emplannerAvailability: z.string().nullable().optional(),
+    emplannerRoles: z.array(z.string()).nullable().optional(),
+    emplannerTags: z.array(z.string()).nullable().optional(),
+    emplannerCountry: z.string().nullable().optional(),
+    emplannerCity: z.string().nullable().optional(),
+    emplannerGender: z.string().nullable().optional(),
+    emplannerFired: z.boolean().nullable().optional(),
+    emplannerTimeTracking: z.string().nullable().optional(),
+    emplannerUtc: z.number().nullable().optional(),
+    emplannerTeams: z.record(z.string(), z.unknown()).nullable().optional(),
+    emplannerProductivity: z.record(z.string(), z.unknown()).nullable().optional(),
+    emplannerFeedbackUrl: z.string().nullable().optional(),
+    emplannerHasOnlyTestLicenses: z.boolean().nullable().optional(),
+    emplannerIsVcs: z.boolean().nullable().optional(),
 });
 
 interface UserRouterDeps {

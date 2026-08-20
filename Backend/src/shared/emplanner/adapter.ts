@@ -6,13 +6,31 @@ export interface EmplannerUser {
     lastName: string;
     extraId: string;
     email: string;
-    availability: string;
+    availability?: string;
     role: string[];
     tags: string[];
-    country: string;
-    city: string;
-    gender: string;
+    country?: string;
+    city?: string;
+    gender?: string;
     fired: boolean;
+    utc?: number;
+    latestTimeTrackingEvent?: string;
+    feedbackUrl?: string;
+    hasOnlyTestLicenses?: boolean;
+    isVcs?: boolean;
+    memberTeams?: Array<{
+        id: string;
+        name: string;
+        badgeColor: string;
+        description: string;
+    }>;
+    leaderTeams?: Array<{
+        id: string;
+        name: string;
+        badgeColor: string;
+        description: string;
+    }>;
+    calculatedProductivityAverage?: Record<string, unknown>;
 }
 
 interface EmplannerApiResponse {
@@ -73,7 +91,6 @@ export class EmplannerAdapter {
     async getUserByEmail(email: string): Promise<EmplannerUser | null> {
         const token = await this.getSessionToken();
 
-        // Ищем по email через search (с точкой перед доменом для точного поиска)
         const searchQuery = email.replace('@', '.@');
         let pageIndex = 0;
         const pageSize = 50;
@@ -95,13 +112,11 @@ export class EmplannerAdapter {
 
             const data = await response.json() as EmplannerApiResponse;
 
-            // Ищем точное совпадение по email
             const found = data.details.list.find(u => u.email.toLowerCase() === email.toLowerCase());
             if (found) {
                 return found;
             }
 
-            // Если есть следующая страница — продолжаем
             if (!data.details.hasNext) {
                 break;
             }
