@@ -96,6 +96,10 @@ export class PrismaUserRepository implements UserRepository {
         return this.toDto(user)
     }
 
+    async deleteById(id: string): Promise<void> {
+        await this.prisma.user.delete({ where: { id } });
+    }
+
     async findRolesByUserId(userId: string): Promise<string[]> {
         const userRoles = await this.prisma.userRole.findMany({
             where: { userId },

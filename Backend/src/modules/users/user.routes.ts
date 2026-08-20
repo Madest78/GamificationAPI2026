@@ -103,5 +103,10 @@ export function createUserRouter({ userRepo, verifyToken, requireAuth }: UserRou
         res.json(user);
     });
 
+    router.delete('/me', async (req: AuthRequest, res: Response) => {
+        await userRepo.deleteById(req.user!.id);
+        res.json({ message: 'User deleted' });
+    });
+
     return router;
 }

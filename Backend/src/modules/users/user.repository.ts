@@ -9,6 +9,7 @@ export interface UserRepository {
     findBySlackId(slackId: string): Promise<UserDto | null>
     create(data: CreateUserDto): Promise<UserDto>
     update(id: string, data: UpdateUserDto): Promise<UserDto>
+    deleteById(id: string): Promise<void>
     findRolesByUserId(userId: string): Promise<string[]>
     findUserWithRoles(userId: string): Promise<{ id: string; email: string; roles: string[] } | null>
 }
