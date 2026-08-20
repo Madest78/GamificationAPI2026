@@ -5,7 +5,8 @@ export const createUserSchema = z.object({
     name: z.string().optional(),
     avatarUrl: z.string().optional(),
     googleId: z.string().optional(),
-    emplannerUid: z.string().regex(/^\d{2}-\d{7}$/).optional(),
+    emplannerUid: z.string().optional(),
+    extraId: z.string().regex(/^\d{2}-\d{7}$/).optional(),
     slackId: z.string().optional(),
 })
 
@@ -20,6 +21,7 @@ export interface UserDto {
     name: string | null;
     avatarUrl: string | null;
     emplannerUid: string | null;
+    extraId: string | null;
     slackId: string | null;
     createdAt: Date;
     updatedAt: Date;

@@ -14,6 +14,8 @@ const envSchema = z.object({
     ALLOWED_DOMAINS: z.string().min(1),
     LOG_LEVEL: z.enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal']).default('info'),
     SLACK_BOT_TOKEN: z.string().min(1),
+    EMPLANNER_API_URL: z.string().url(),
+    EMPLANNER_TOKEN: z.string().min(1),
 })
 
 //Парсинг + экспорт
