@@ -73,6 +73,7 @@ export function createUserRouter({ userRepo, verifyToken, requireAuth }: UserRou
                     user = await userRepo.findById(req.user!.id);
                 } catch (error) {
                     console.error('Emplanner sync failed:', error);
+                    console.error('Emplanner sync error details:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
                     recordSyncFailure('emplanner', email);
                 }
             }
@@ -84,6 +85,17 @@ export function createUserRouter({ userRepo, verifyToken, requireAuth }: UserRou
     router.post('/reset-slack', async (req: AuthRequest, res: Response) => {
         const user = await userRepo.update(req.user!.id, { slackId: null } as any);
         res.json({ message: 'Slack ID cleared', user });
+    });
+
+    router.post('/sync-emplanner', async (req: AuthRequest, res: Response) => {
+        try {
+            await emplannerSync.syncUserByEmail(req.user!.email);
+            const user = await userRepo.findById(req.user!.id);
+            res.json({ message: 'Emplanner synced', user });
+        } catch (error: any) {
+            console.error('Force emplanner sync failed:', error);
+            res.status(500).json({ error: error.message || 'Sync failed' });
+        }
     });
 
     router.patch('/me', validate(updateProfileSchema), async (req: AuthRequest, res: Response) => {
