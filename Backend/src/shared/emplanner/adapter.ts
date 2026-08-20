@@ -18,6 +18,10 @@ export interface EmplannerUser {
 interface EmplannerApiResponse {
     type: string;
     details: {
+        pageIndex: number;
+        rowCount: number;
+        pageSize: number;
+        hasNext: boolean;
         list: EmplannerUser[];
     };
 }
@@ -25,7 +29,7 @@ interface EmplannerApiResponse {
 interface SessionResponse {
     type: string;
     details: {
-        token: string;
+        encodedToken: string;
     };
 }
 
@@ -62,33 +66,48 @@ export class EmplannerAdapter {
         }
 
         const data = await response.json() as SessionResponse;
-        this.sessionToken = data.details.token;
+        this.sessionToken = data.details.encodedToken;
         return this.sessionToken;
     }
 
     async getUserByEmail(email: string): Promise<EmplannerUser | null> {
-        const sessionToken = await this.getSessionToken();
-        const searchEmail = email.replace('@', '.matusevich@emplanner.team');
-        const url = `${this.baseUrl}/rest/v3/user?p.pageSize=50&p.sortBy=firstName&p.order=asc&search=${searchEmail}&productionAccess=HAVE_ACCESS`;
+        const token = await this.getSessionToken();
 
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${sessionToken}`,
-                'Accept': 'application/json',
-            },
-        });
+        // Ищем по email через search (с точкой перед доменом для точного поиска)
+        const searchQuery = email.replace('@', '.@');
+        let pageIndex = 0;
+        const pageSize = 50;
 
-        if (!response.ok) {
-            throw new Error(`Emplanner API error: ${response.status}`);
+        while (true) {
+            const url = `${this.baseUrl}/rest/v3/user?p.pageSize=${pageSize}&p.sortBy=firstName&p.order=asc&p.pageIndex=${pageIndex}&search=${encodeURIComponent(searchQuery)}&productionAccess=HAVE_ACCESS`;
+
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`Emplanner API error: ${response.status}`);
+            }
+
+            const data = await response.json() as EmplannerApiResponse;
+
+            // Ищем точное совпадение по email
+            const found = data.details.list.find(u => u.email.toLowerCase() === email.toLowerCase());
+            if (found) {
+                return found;
+            }
+
+            // Если есть следующая страница — продолжаем
+            if (!data.details.hasNext) {
+                break;
+            }
+            pageIndex++;
         }
 
-        const data = await response.json() as EmplannerApiResponse;
-
-        if (data.details.list.length === 0) {
-            return null;
-        }
-
-        return data.details.list[0];
+        return null;
     }
 }
