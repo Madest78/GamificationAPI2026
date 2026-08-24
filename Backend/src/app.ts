@@ -2,8 +2,6 @@ import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { requestId, logger } from './shared/middleware/index.js';
 import { AppError } from './errors/AppErrors.js';
 import { prisma } from './shared/prisma.js';
@@ -93,10 +91,6 @@ app.use(logger);
 app.get('/api/health', (_req: Request, res: Response) => {
     res.json({ status: 'ok' });
 });
-
-// --- Static files (frontend) ---
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-app.use(express.static(path.join(__dirname, '../public')));
 
 // --- Routes ---
 app.use('/api/auth', authLimiter, createAuthRouter({ authService, verifyToken, requireAuth }));
