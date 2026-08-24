@@ -4,11 +4,27 @@
         "name": "Floor Plan"
     },
     {
-        "code": "BIG_FP",
-        "name": "Big Floor Plan"
-    },
-    {
         "code": "ESX",
         "name": "ESX"
+    },
+    {
+        "code": "MULTI",
+        "name": "Multi-View"
+    },
+    {
+        "code": "FF",
+        "name": "Free Fire"
+    },
+    {
+        "code": "EXTERIOR",
+        "name": "Exterior"
+    },
+    {
+        "code": "SYMBILITY",
+        "name": "Symbility"
+    },
+    {
+        "code": "SUPER_V",
+        "name": "Supervisor"
     }
 ]

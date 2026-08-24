@@ -4,6 +4,7 @@ import { UserRepository } from '../users/user.repository.js';
 import { AuthRepository } from './auth.repository.js';
 import { UnauthorizedError, BadRequestError } from '@/errors/AppErrors.js';
 import { createHash, randomBytes } from 'node:crypto';
+import { prisma } from '@/shared/prisma.js';
 
 // Время жизни токенов
 const ACCESS_TOKEN_EXPIRY = '15m';
@@ -107,6 +108,22 @@ export class AuthService {
                     avatarUrl: googleUser.picture,
                     googleId: googleUser.id,
                 });
+
+                // Первый пользователь автоматически становится SUPERADMIN
+                const userCount = await prisma.user.count();
+                if (userCount === 1) {
+                    const superadminRole = await prisma.role.findUnique({
+                        where: { code: 'SUPERADMIN' },
+                    });
+                    if (superadminRole) {
+                        await prisma.userRole.create({
+                            data: {
+                                userId: user.id,
+                                roleId: superadminRole.id,
+                            },
+                        });
+                    }
+                }
             }
         }
 

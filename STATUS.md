@@ -1,7 +1,19 @@
-# Статус проекта DSPeopleBack
+# Статус проекта Gamification-DS
 
-**Дата:** 12 августа 2026
-**Этап:** Phase 10 — Admin Panel ✅
+**Дата:** 20 августа 2026
+**Этап:** Phase 11 — External Integrations ✅
+**URL:** https://gamification-ds.onrender.com
+
+---
+
+## Инфраструктура
+
+| Компонент | Значение |
+|-----------|----------|
+| Production URL | `https://gamification-ds.onrender.com` |
+| GitHub repo | `FPScriptTeam/Gamification-ds` |
+| DB | PostgreSQL 16 на Render (`gamification_ds_db`) |
+| Frontend (dev) | `http://localhost:5173` |
 
 ---
 
@@ -9,39 +21,17 @@
 
 | Компонент | Статус |
 |-----------|--------|
-| TypeScript (tsconfig, ESM, strict, path aliases) | ✅ Готово |
-| Express skeleton (app.ts, index.ts) | ✅ Готово |
-| Error handling (AppErrors.ts — 6 subclasses) | ✅ Готово |
-| Utils (asyncHandler.ts) | ✅ Готово |
-| Scripts (dev, build, start) | ✅ Готово |
-| Health endpoint (GET /api/health) | ✅ Готово |
-
----
-
-## Выполнено (Phase 2 — Foundation) ✅
-
-| Компонент | Статус |
-|-----------|--------|
-| PostgreSQL (v16.14) | ✅ Установлена локально |
-| Database `dspeople` | ✅ Создана |
-| Config Validation (env.ts + Zod) | ✅ Готово |
-| Prisma Client (generate) | ✅ Сгенерирован |
-| @prisma/adapter-pg | ✅ Установлен |
-| Prisma Singleton (prisma.ts) | ✅ Готово |
-| Render.com PostgreSQL | ✅ Подключена |
-| Prisma модели (12 моделей) | ✅ User, Role, UserRole, Specialization, UserSpecialization, RefreshToken, RevokedToken, LoginCode, AchievementDef, UserAchievement, KudosType, KudosTransaction, UserKudosBalance, Follow |
-| Prisma migrations | ✅ init, emplannerUid, achievements, kudos, follow |
-| Seed ролей (5 ролей) | ✅ DRAFTER, TEAMLEAD, MEMBER, ADMIN, SUPERADMIN |
-| User interface (Zod + DTO) | ✅ user.interface.ts |
-| User repository interface | ✅ user.repository.ts |
-| User repository Prisma | ✅ user.repository.prisma.ts |
-| Auth interface (Zod + DTO) | ✅ auth.interface.ts |
-| Auth repository interface | ✅ auth.repository.ts |
-| Auth repository Prisma | ✅ auth.repository.prisma.ts |
-| Express middleware (requestId) | ✅ shared/middleware/requestId.ts |
-| Express middleware (validate) | ✅ shared/middleware/validate.ts |
-| Express middleware (logger) | ✅ shared/middleware/logger.ts |
-| App.ts updated | ✅ Middleware integrated |
+| TypeScript (tsconfig, ESM, strict, path aliases) | ✅ |
+| Express 5 skeleton (app.ts, index.ts) | ✅ |
+| Error handling (AppErrors.ts — 6 subclasses) | ✅ |
+| Scripts (dev, build, start, postinstall) | ✅ |
+| Health endpoint (GET /api/health) | ✅ |
+| PostgreSQL on Render | ✅ |
+| Config Validation (env.ts + Zod) | ✅ |
+| Prisma models (14 моделей) | ✅ |
+| Seed (5 ролей, 3 специализации, 8 kudos, 10 achievements) | ✅ |
+| All repositories (User, Auth, Achievement, Kudos, Feed) | ✅ |
+| Middleware (requestId, validate, logger) | ✅ |
 
 ---
 
@@ -49,11 +39,10 @@
 
 | Компонент | Статус |
 |-----------|--------|
-| jose library (JWT) | ✅ Установлен |
-| Auth middleware (verifyToken, requireAuth, requireRole) | ✅ auth.middleware.ts |
-| Auth service (Google OAuth + JWT) | ✅ auth.service.ts |
-| Auth routes (5 endpoints) | ✅ auth.routes.ts |
-| App.ts updated | ✅ Auth routes integrated |
+| Google OAuth 2.0 (jose library) | ✅ Работает |
+| JWT access token (15 мин) + refresh token (30 дней) | ✅ |
+| Auth middleware (verifyToken, requireAuth, requireRole) | ✅ |
+| Auth error page (auth-error.html) | ✅ |
 
 ---
 
@@ -61,14 +50,10 @@
 
 | Компонент | Статус |
 |-----------|--------|
-| node-cron | ✅ Установлен |
-| pg-boss | ✅ Установлен |
-| Queue (pg-boss wrapper) | ✅ shared/jobs/queue.ts |
-| Scheduler (node-cron) | ✅ shared/jobs/scheduler.ts |
-| Workers (job handlers) | ✅ shared/jobs/workers.ts |
-| Job types (3 jobs) | ✅ import.daily, achievements.check, kudos.reset |
-| App.ts updated | ✅ Job initialization + graceful shutdown |
-| Index.ts updated | ✅ Graceful shutdown on SIGINT/SIGTERM |
+| node-cron scheduler | ✅ |
+| pg-boss queue + workers | ✅ |
+| Jobs: import.daily, achievements.check, kudos.reset | ✅ |
+| Graceful shutdown (SIGINT/SIGTERM) | ✅ |
 
 ---
 
@@ -76,10 +61,8 @@
 
 | Компонент | Статус |
 |-----------|--------|
-| ws library | ✅ Установлен |
-| WebSocket server | ✅ shared/websocket/server.ts |
-| Auth via token | ✅ JWT verification on connection |
-| Events (ping/pong, subscribe) | ✅ Basic event handling |
+| ws library + JWT auth on connect | ✅ |
+| Events (ping/pong, subscribe) | ✅ |
 
 ---
 
@@ -87,12 +70,10 @@
 
 | Компонент | Статус |
 |-----------|--------|
-| Prisma models (AchievementDef, UserAchievement) | ✅ |
-| Achievement interface (Zod + DTO) | ✅ achievement.interface.ts |
-| Achievement repository interface | ✅ achievement.repository.ts |
-| Achievement repository Prisma | ✅ achievement.repository.prisma.ts |
-| Achievement service | ✅ achievement.service.ts |
-| Achievement routes | ✅ achievement.routes.ts |
+| AchievementDef + UserAchievement models | ✅ |
+| Service + Routes (GET, POST /check) | ✅ |
+| JSONLogic conditions | ✅ |
+| Seed: 10 achievements | ✅ |
 
 ---
 
@@ -100,12 +81,9 @@
 
 | Компонент | Статус |
 |-----------|--------|
-| Prisma models (KudosType, KudosTransaction, UserKudosBalance) | ✅ |
-| Kudos interface (Zod + DTO) | ✅ kudos.interface.ts |
-| Kudos repository interface | ✅ kudos.repository.ts |
-| Kudos repository Prisma | ✅ kudos.repository.prisma.ts |
-| Kudos service | ✅ kudos.service.ts |
-| Kudos routes | ✅ kudos.routes.ts |
+| KudosType, KudosTransaction, UserKudosBalance models | ✅ |
+| Service + Routes (types, send, history, balance) | ✅ |
+| Seed: 8 kudos types | ✅ |
 
 ---
 
@@ -113,10 +91,8 @@
 
 | Компонент | Статус |
 |-----------|--------|
-| Prisma model (Follow) | ✅ |
-| Feed interface (Zod + DTO) | ✅ feed.interface.ts |
-| Feed service | ✅ feed.service.ts |
-| Feed routes | ✅ feed.routes.ts |
+| Follow model | ✅ |
+| Service + Routes (follow, unfollow, feed, following, followers) | ✅ |
 
 ---
 
@@ -124,9 +100,28 @@
 
 | Компонент | Статус |
 |-----------|--------|
-| Admin interface (Zod + DTO) | ✅ admin.interface.ts |
-| Admin service | ✅ admin.service.ts |
-| Admin routes | ✅ admin.routes.ts |
+| Admin service + routes | ✅ |
+| Управление пользователями, ролями, специализациями | ✅ |
+
+---
+
+## Выполнено (Phase 11 — External Integrations) ✅
+
+| Компонент | Статус |
+|-----------|--------|
+| **Emplanner API** | |
+| EmplannerAdapter (session auth, paginated search) | ✅ |
+| EmplannerSyncService (all metrics) | ✅ |
+| Auto-sync on GET /api/users/me | ✅ |
+| Fields: uid, extraId, roles, tags, country, city, gender, teams, productivity, feedbackUrl | ✅ |
+| Generic cooldown cache (5 min) | ✅ |
+| **Slack API** | |
+| SlackAdapter (Bot token, paginated users) | ✅ |
+| SlackSyncService (slackId, avatarUrl) | ✅ |
+| Auto-sync on GET /api/users/me | ✅ |
+| **Google OAuth** | |
+| Google OAuth callback → create/login user | ✅ |
+| Redirect to frontend (localhost:5173) | ✅ |
 
 ---
 
@@ -144,7 +139,6 @@
 
 ```
 Phase 1 (Foundation)     ████████████████████ 100%
-Phase 2 (Before Auth)    ████████████████████ 100%
 Phase 3 (Auth)           ████████████████████ 100%
 Phase 4 (Job Infra)      ████████████████████ 100%
 Phase 5 (WebSocket)      ████████████████████ 100%
@@ -153,9 +147,10 @@ Phase 7 (Achievements)   ██████████████████�
 Phase 8 (Kudos)          ████████████████████ 100%
 Phase 9 (Feed)           ████████████████████ 100%
 Phase 10 (Admin)         ████████████████████ 100%
+Phase 11 (Integrations)  ████████████████████ 100%
 ```
 
-**Общий прогресс: ~90%** (Phase 6 ожидает внешний API)
+**Общий прогресс: ~91%** (Phase 6 ожидает внешний API)
 
 ---
 
@@ -168,7 +163,15 @@ Phase 10 (Admin)         ██████████████████�
 | GET | `/api/auth/google/callback` | Обработка ответа от Google |
 | POST | `/api/auth/refresh` | Обновление токенов |
 | POST | `/api/auth/logout` | Выход |
-| GET | `/api/auth/me` | Текущий пользователь |
+
+### Users
+| Метод | Endpoint | Описание |
+|-------|----------|----------|
+| GET | `/api/users/me` | Текущий профиль + автосинхронизация |
+| PATCH | `/api/users/me` | Обновить профиль |
+| DELETE | `/api/users/me` | Удалить профиль |
+| POST | `/api/users/reset-slack` | Сбросить slackId |
+| POST | `/api/users/sync-emplanner` | Принудительная синхронизация Emplanner |
 
 ### Achievements
 | Метод | Endpoint | Описание |
@@ -209,23 +212,47 @@ Phase 10 (Admin)         ██████████████████�
 
 ---
 
+## Prisma Schema — User поля
+
+| Поле | Источник | Описание |
+|------|----------|----------|
+| id | System | CUID |
+| email | Google | Корпоративный email |
+| personalEmail | Emplanner | Gmail (если есть) |
+| name | Google | Имя |
+| avatarUrl | Google | Фото |
+| googleId | Google | Google ID |
+| emplannerUid | Emplanner | Internal ID |
+| extraId | Emplanner | Contract number (XX-XXXXXXX) |
+| slackId | Slack | Slack member ID |
+| emplannerRoles | Emplanner | Roles array |
+| emplannerTags | Emplanner | Tags array |
+| emplannerCountry | Emplanner | Country |
+| emplannerCity | Emplanner | City |
+| emplannerGender | Emplanner | Gender |
+| emplannerFired | Emplanner | Fired status |
+| emplannerUtc | Emplanner | UTC offset |
+| emplannerTeams | Emplanner | Teams (JSON) |
+| emplannerProductivity | Emplanner | Productivity (JSON) |
+| emplannerFeedbackUrl | Emplanner | Feedback Google Doc |
+| emplannerHasOnlyTestLicenses | Emplanner | Test licenses flag |
+| emplannerIsVcs | Emplanner | VCS flag |
+
+---
+
 ## Следующие шаги
 
-1. Деплой на Render.com
-2. Настройка Google Cloud Console credentials
-3. Тестирование всех endpoints
-4. Phase 6 — Orders & Import (когда будет доступ к Emplanner API)
+1. Phase 6 — Orders & Import (когда будет доступ к Source DB)
+2. Slack Bot Token — получить реальный токен
+3. Тестирование всех endpoints с реальными данными
 
 ---
 
 ## Замечания
 
 - Все Phase кроме 6 завершены!
-- Phase 6 (Orders & Import) ожидает доступа к Emplanner API
+- Emplanner API: поиск по email prefix (email.split('@')[0])
+- Session token кэшируется в памяти (EmplannerAdapter)
+- Cooldown cache 5 мин для внешних API (Slack + Emplanner)
 - PostgreSQL — основная продовая БД
-- BigQuery — внешний источник данных (Emplanner API)
-- WebSocket: аутентификация через JWT, базовые события
-- Achievements: JSONLogic conditions, проверка по расписанию
-- Kudos: еженедельный лимит 10, случайный пул
-- Feed: лента достижений и kudos от подписанных пользователей
-- Admin: управление пользователями, ролями, специализациями
+- Google OAuth client ID: `411907228924-...`

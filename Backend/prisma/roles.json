@@ -2,17 +2,22 @@
     {
         "code": "DRAFTER",
         "name": "Drafter",
-        "description": "FP, Big FP, ESX"
+        "description": "Member of profile spec team (FP, ESX, MULTI, FF, EXTERIOR, SYMBILITY, SUPER_V)"
     },
     {
         "code": "TEAMLEAD",
         "name": "Team Leader",
-        "description": "Team leader" 
+        "description": "Leader of profile spec team"
     },
     {
         "code": "MEMBER",
         "name": "Member",
-        "description": "Any without role"
+        "description": "Registered user, not in any profile spec team"
+    },
+    {
+        "code": "PROFILES_ADMIN",
+        "name": "Profiles Administrator",
+        "description": "Manages profiles and roles (assigned manually)"
     },
     {
         "code": "ADMIN",
