@@ -92,40 +92,6 @@ app.get('/api/health', (_req: Request, res: Response) => {
     res.json({ status: 'ok' });
 });
 
-// --- TEMP: Init superadmin (удалить после использования) ---
-app.post('/api/init-superadmin', async (req: Request, res: Response) => {
-    try {
-        const { email } = req.body;
-        if (!email) {
-            res.status(400).json({ error: 'Email required' });
-            return;
-        }
-        const user = await prisma.user.findUnique({ where: { email } });
-        if (!user) {
-            res.status(404).json({ error: 'User not found' });
-            return;
-        }
-        const role = await prisma.role.findUnique({ where: { code: 'SUPERADMIN' } });
-        if (!role) {
-            res.status(500).json({ error: 'SUPERADMIN role not found. Run seed first.' });
-            return;
-        }
-        const existing = await prisma.userRole.findUnique({
-            where: { userId_roleId: { userId: user.id, roleId: role.id } },
-        });
-        if (existing) {
-            res.json({ message: 'Already SUPERADMIN' });
-            return;
-        }
-        await prisma.userRole.create({
-            data: { userId: user.id, roleId: role.id },
-        });
-        res.json({ message: `${email} is now SUPERADMIN` });
-    } catch (error: any) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
 // --- Routes ---
 app.use('/api/auth', authLimiter, createAuthRouter({ authService, verifyToken, requireAuth }));
 app.use('/api/users', createUserRouter({ userRepo, verifyToken, requireAuth }));
