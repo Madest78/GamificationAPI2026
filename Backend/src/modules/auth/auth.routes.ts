@@ -41,7 +41,8 @@ export function createAuthRouter({ authService, verifyToken, requireAuth }: Auth
 
         const { accessToken, refreshToken } = await authService.handleGoogleCallback(code);
 
-        const redirectUrl = new URL('/auth/callback', env.FRONTEND_URL);
+        const origin = req.protocol + '://' + req.get('host');
+        const redirectUrl = new URL('/auth/callback', origin);
         redirectUrl.searchParams.set('accessToken', accessToken);
         redirectUrl.searchParams.set('refreshToken', refreshToken);
 
