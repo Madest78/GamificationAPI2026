@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { validate } from '@/shared/middleware/validate.js';
 import { AdminService } from './admin.service.js';
 import { AuthRequest } from '../auth/auth.middleware.js';
+import { readFileSync } from 'node:fs';
 
 const paginationSchema = z.object({
     page: z.coerce.number().int().min(1).default(1),
@@ -86,6 +87,34 @@ export function createAdminRouter({ adminService, verifyToken, requireAuth, requ
         const { id, specializationCode } = req.params as { id: string; specializationCode: string };
         await adminService.removeSpecialization(id, specializationCode);
         res.json({ message: 'Specialization removed' });
+    });
+
+    router.post('/seed', requireRole('SUPERADMIN'), async (_req: AuthRequest, res: Response) => {
+        try {
+            const { prisma } = await import('@/shared/prisma.js');
+
+            const roles = JSON.parse(readFileSync('prisma/roles.json', 'utf-8'));
+            for (const role of roles) {
+                await prisma.role.upsert({
+                    where: { code: role.code },
+                    create: role,
+                    update: { name: role.name, description: role.description },
+                });
+            }
+
+            const specializations = JSON.parse(readFileSync('prisma/specializations.json', 'utf-8'));
+            for (const spec of specializations) {
+                await prisma.specialization.upsert({
+                    where: { code: spec.code },
+                    create: spec,
+                    update: { name: spec.name },
+                });
+            }
+
+            res.json({ message: 'Seed completed', roles: roles.length, specializations: specializations.length });
+        } catch (error: any) {
+            res.status(500).json({ error: error.message });
+        }
     });
 
     return router;
