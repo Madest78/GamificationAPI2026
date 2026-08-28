@@ -1,12 +1,22 @@
 import { getQueue } from './queue.js';
+import { prisma } from '@/shared/prisma.js';
+import { PrismaUserRepository } from '@/modules/users/user.repository.prisma.js';
+import { EmplannerSyncService } from '@/shared/emplanner/sync.js';
 
 async function handleImportDaily(job: any) {
     console.log(`[ImportDaily] Processing job ${job.id}`);
-    // TODO: Реализовать импорт данных из Emplanner/BigQuery
-    // 1. Получить данные из источника
-    // 2. Трансформировать
-    // 3. Upsert в PostgreSQL
-    console.log('[ImportDaily] Job completed');
+
+    try {
+        const userRepo = new PrismaUserRepository(prisma);
+        const emplannerSync = new EmplannerSyncService(userRepo);
+        const result = await emplannerSync.syncAllUsers();
+        console.log(`[ImportDaily] Emplanner sync: ${result.synced}/${result.total} synced, ${result.skipped} skipped, ${result.failed} failed`);
+    } catch (error) {
+        console.error('[ImportDaily] Emplanner sync failed:', error);
+        throw error;
+    }
+
+    // TODO: Импорт данных из BigQuery (DS Shop, Google Sheets)
 }
 
 async function handleAchievementsCheck(job: any) {

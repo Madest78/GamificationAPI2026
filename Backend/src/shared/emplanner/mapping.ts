@@ -33,7 +33,7 @@ function teamNameToSpecialization(teamName: string): string | null {
 
 export interface MappingResult {
     specializations: string[];   // e.g. ['FP', 'FF']
-    role: string;                // 'DRAFTER' | 'TEAMLEAD' | 'MEMBER'
+    roles: string[];             // e.g. ['DRAFTER', 'TEAMLEAD']
 }
 
 /**
@@ -72,10 +72,10 @@ export function mapEmplannerTeamsToRoles(
         }
     }
 
-    const role = isTeamLead ? 'TEAMLEAD' : isInTeam ? 'DRAFTER' : 'MEMBER';
+    const roles = isTeamLead ? ['DRAFTER', 'TEAMLEAD'] : isInTeam ? ['DRAFTER'] : ['MEMBER'];
 
     return {
         specializations: Array.from(specializationSet),
-        role,
+        roles,
     };
 }

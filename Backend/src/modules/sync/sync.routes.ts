@@ -1,5 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { SlackSyncService } from '@/shared/slack/sync.js';
+import { EmplannerSyncService } from '@/shared/emplanner/sync.js';
 import { UserRepository } from '@/modules/users/user.repository.js';
 import { AuthRequest } from '../auth/auth.middleware.js';
 
@@ -13,6 +14,7 @@ interface SyncRouterDeps {
 export function createSyncRouter({ userRepo, verifyToken, requireAuth, requireRole }: SyncRouterDeps): Router {
     const router = Router();
     const slackSync = new SlackSyncService(userRepo);
+    const emplannerSync = new EmplannerSyncService(userRepo);
 
     router.use(verifyToken, requireAuth, requireRole('ADMIN', 'SUPERADMIN'));
 
@@ -29,6 +31,17 @@ export function createSyncRouter({ userRepo, verifyToken, requireAuth, requireRo
         }
         const result = await slackSync.syncUserByEmail(email);
         res.json(result);
+    });
+
+    // Ручной полный синк всех пользователей из Emplanner (~N/50 запросов)
+    router.post('/emplanner/sync-all', async (_req: AuthRequest, res: Response) => {
+        try {
+            const result = await emplannerSync.syncAllUsers();
+            res.json({ message: 'Emplanner sync complete', ...result });
+        } catch (error: any) {
+            console.error('[Sync] Emplanner sync-all failed:', error);
+            res.status(502).json({ error: error.message || 'Emplanner sync failed' });
+        }
     });
 
     return router;

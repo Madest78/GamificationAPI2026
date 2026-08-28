@@ -49,6 +49,7 @@ export interface UserDto {
     emplannerFeedbackUrl: string | null;
     emplannerHasOnlyTestLicenses: boolean | null;
     emplannerIsVcs: boolean | null;
+    lastSyncedAt: Date | null;
     createdAt: Date;
     updatedAt: Date;
 }

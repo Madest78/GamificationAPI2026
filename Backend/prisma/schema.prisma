@@ -36,7 +36,8 @@ model User {
   emplannerFeedbackUrl String?
   emplannerHasOnlyTestLicenses Boolean?
   emplannerIsVcs Boolean?
-  
+  lastSyncedAt   DateTime? // последняя успешная синхронизация из Emplanner
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

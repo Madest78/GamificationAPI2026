@@ -234,5 +234,6 @@ function createMockUserRepo(): UserRepository {
         update: vi.fn(),
         findRolesByUserId: vi.fn(),
         findUserWithRoles: vi.fn(),
+        findSpecializationsByUserId: vi.fn(),
     };
 }

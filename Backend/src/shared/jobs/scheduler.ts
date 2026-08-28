@@ -4,24 +4,29 @@ import { getQueue } from './queue.js';
 interface JobDefinition {
     name: string;
     schedule: string;
+    timezone: string;
     queue: string;
     data?: Record<string, unknown>;
 }
 
 const jobs: JobDefinition[] = [
     {
+        // 15:00 по Грузии — окно минимальной нагрузки Emplanner
         name: 'import.daily',
-        schedule: '0 2 * * *',
+        schedule: '0 15 * * *',
+        timezone: 'Asia/Tbilisi',
         queue: 'import-daily',
     },
     {
         name: 'achievements.check',
         schedule: '0 3 * * *',
+        timezone: 'Asia/Tbilisi',
         queue: 'achievements-check',
     },
     {
         name: 'kudos.reset',
         schedule: '0 0 * * 1',
+        timezone: 'Asia/Tbilisi',
         queue: 'kudos-reset',
     },
 ];
@@ -42,7 +47,7 @@ export async function startScheduler(): Promise<void> {
             } catch (error) {
                 console.error(`[Scheduler] Failed to queue job ${job.name}:`, error);
             }
-        });
+        }, { timezone: job.timezone });
 
         scheduledTasks.push(task);
         console.log(`[Scheduler] Registered job: ${job.name} (${job.schedule})`);

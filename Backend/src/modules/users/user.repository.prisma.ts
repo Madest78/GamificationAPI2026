@@ -25,6 +25,7 @@ export class PrismaUserRepository implements UserRepository {
             emplannerFeedbackUrl: user.emplannerFeedbackUrl,
             emplannerHasOnlyTestLicenses: user.emplannerHasOnlyTestLicenses,
             emplannerIsVcs: user.emplannerIsVcs,
+            lastSyncedAt: user.lastSyncedAt,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
         }
@@ -119,5 +120,13 @@ export class PrismaUserRepository implements UserRepository {
             email: user.email,
             roles: user.roles.map(ur => ur.role.code),
         };
+    }
+
+    async findSpecializationsByUserId(userId: string): Promise<string[]> {
+        const userSpecs = await this.prisma.userSpecialization.findMany({
+            where: { userId },
+            include: { specialization: true },
+        });
+        return userSpecs.map(us => us.specialization.code);
     }
 }

@@ -63,8 +63,10 @@ export function createUserRouter({ userRepo, verifyToken, requireAuth }: UserRou
             }
         }
 
-        // Автосинхронизация из Emplanner если не хватает полей
-        if (user && (!user.emplannerUid || !user.extraId)) {
+        // Автосинхронизация из Emplanner: первый раз или данные старше 12 часов
+        const SYNC_TTL_MS = 12 * 60 * 60 * 1000;
+        const isStale = !user?.lastSyncedAt || (Date.now() - new Date(user.lastSyncedAt).getTime()) > SYNC_TTL_MS;
+        if (user && (!user.emplannerUid || !user.extraId || isStale)) {
             const email = user.email;
             if (shouldAttemptSync('emplanner', email)) {
                 try {
@@ -77,6 +79,15 @@ export function createUserRouter({ userRepo, verifyToken, requireAuth }: UserRou
                     recordSyncFailure('emplanner', email);
                 }
             }
+        }
+
+        // Роли и специализации для профиля
+        if (user) {
+            const [roles, specializations] = await Promise.all([
+                userRepo.findRolesByUserId(req.user!.id),
+                userRepo.findSpecializationsByUserId(req.user!.id),
+            ]);
+            user = { ...user, roles, specializations } as typeof user;
         }
 
         res.json(user);

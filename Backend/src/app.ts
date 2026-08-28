@@ -16,12 +16,14 @@ import { AchievementService } from './modules/achievements/achievement.service.j
 import { KudosService } from './modules/kudos/kudos.service.js';
 import { FeedService } from './modules/feed/feed.service.js';
 import { AdminService } from './modules/admin/admin.service.js';
+import { TeamsService } from './modules/teams/teams.service.js';
 import { createVerifyToken, requireAuth, requireRole } from './modules/auth/auth.middleware.js';
 import { createAuthRouter } from './modules/auth/auth.routes.js';
 import { createAchievementRouter } from './modules/achievements/achievement.routes.js';
 import { createKudosRouter } from './modules/kudos/kudos.routes.js';
 import { createFeedRouter } from './modules/feed/feed.routes.js';
 import { createAdminRouter } from './modules/admin/admin.routes.js';
+import { createTeamRouter } from './modules/teams/teams.routes.js';
 import { createUserRouter } from './modules/users/user.routes.js';
 import { createSyncRouter } from './modules/sync/sync.routes.js';
 import { startScheduler, startWorkers, stopQueue, stopScheduler } from './shared/jobs/index.js';
@@ -44,6 +46,7 @@ const achievementService = new AchievementService(achievementRepo, userRepo);
 const kudosService = new KudosService(kudosRepo, userRepo);
 const feedService = new FeedService(userRepo, feedRepo);
 const adminService = new AdminService(userRepo, achievementRepo);
+const teamsService = new TeamsService();
 
 // --- Security ---
 app.use(helmet());
@@ -95,6 +98,7 @@ app.get('/api/health', (_req: Request, res: Response) => {
 // --- Routes ---
 app.use('/api/auth', authLimiter, createAuthRouter({ authService, verifyToken, requireAuth }));
 app.use('/api/users', createUserRouter({ userRepo, verifyToken, requireAuth }));
+app.use('/api/teams', createTeamRouter({ teamsService, verifyToken, requireAuth }));
 app.use('/api/achievements', createAchievementRouter({ achievementService, verifyToken, requireAuth, requireRole }));
 app.use('/api/kudos', createKudosRouter({ kudosService, verifyToken, requireAuth }));
 app.use('/api/feed', createFeedRouter({ feedService, verifyToken, requireAuth }));

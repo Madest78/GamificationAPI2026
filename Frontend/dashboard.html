@@ -26,6 +26,15 @@
         .teams { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
         .loading { text-align: center; padding: 48px; color: #888; }
         .error { text-align: center; padding: 48px; color: #ff4444; }
+        .team-block { margin-bottom: 20px; }
+        .team-block:last-child { margin-bottom: 0; }
+        .team-name { font-size: 14px; font-weight: 600; color: #7c7cff; margin-bottom: 10px; }
+        .member-row { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px; margin-bottom: 4px; background: #16162a; }
+        .member-row img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; background: #333; }
+        .member-name { flex: 1; font-size: 14px; }
+        .member-row.leader { background: rgba(255, 193, 7, 0.08); border-left: 3px solid #ffc107; }
+        .leader-badge { display: inline-block; background: #3a2f10; color: #ffc107; padding: 3px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+        .role-badge { display: inline-block; background: #22224a; color: #9d9dff; padding: 3px 8px; border-radius: 10px; font-size: 11px; }
     </style>
 </head>
 <body>
@@ -94,12 +103,17 @@
 
                 <div class="card">
                     <h2>Roles</h2>
-                    <div>${user.roles?.map(r => '<span class="badge">' + (r.role?.code || r) + '</span>').join('') || '<span class="badge">MEMBER</span>'}</div>
+                    <div>${(user.roles || []).map(r => '<span class="badge">' + (r.role?.code || r) + '</span>').join('') || '<span class="badge">MEMBER</span>'}</div>
                 </div>
 
                 <div class="card">
                     <h2>Specializations</h2>
-                    <div>${user.specializations?.map(s => '<span class="badge badge-green">' + (s.specialization?.code || s) + '</span>').join('') || '<span style="color:#555">None assigned</span>'}</div>
+                    <div>${(user.specializations || []).map(s => '<span class="badge badge-green">' + (s.specialization?.code || s) + '</span>').join('') || '<span style="color:#555">None assigned</span>'}</div>
+                </div>
+
+                <div id="teams-card" class="card" style="display:none">
+                    <h2>My Team</h2>
+                    <div id="teams-content"></div>
                 </div>
 
                 <div class="card">
@@ -120,11 +134,37 @@
             `;
         }
 
+        function renderTeams(directory, myId) {
+            const myTeams = directory.filter(t =>
+                t.leaders.some(m => m.id === myId) || t.members.some(m => m.id === myId)
+            );
+
+            if (!myTeams.length) return;
+
+            document.getElementById('teams-card').style.display = '';
+
+            document.getElementById('teams-content').innerHTML = myTeams.map(team => {
+                const rows = [...team.leaders, ...team.members].map(m => `
+                    <div class="member-row ${m.isLeader ? 'leader' : ''}">
+                        <img src="${m.avatarUrl || ''}" alt="">
+                        <span class="member-name">${m.name}</span>
+                        ${m.isLeader ? '<span class="leader-badge">TEAM LEAD</span>' : ''}
+                    </div>
+                `).join('');
+                return `<div class="team-block"><div class="team-name">${team.name}</div>${rows}</div>`;
+            }).join('');
+        }
+
         async function init() {
             try {
                 const user = await api('/api/users/me');
                 if (user.error) throw new Error(user.error);
                 render(user);
+
+                const directory = await api('/api/teams');
+                if (Array.isArray(directory)) {
+                    renderTeams(directory, user.id);
+                }
             } catch (e) {
                 document.getElementById('content').innerHTML = '<div class="error">' + e.message + '</div>';
             }
