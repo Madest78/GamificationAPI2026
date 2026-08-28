@@ -157,13 +157,27 @@ export class EmplannerSyncService {
         const seenEmails = new Set<string>();
 
         for (const eu of emplannerUsers) {
-            const domain = eu.email.split('@')[1]?.toLowerCase();
-            if (!domain || !allowedDomains.has(domain)) {
+            // Check BOTH fields for corporate domain
+            const emailVal = eu.email || '';
+            const corpEmailVal = eu.corporateEmail || '';
+            const emailDomain = emailVal.split('@')[1]?.toLowerCase() || '';
+            const corpDomain = corpEmailVal.split('@')[1]?.toLowerCase() || '';
+
+            let primaryEmail = '';
+            let personalEmail: string | null = null;
+
+            if (allowedDomains.has(emailDomain)) {
+                primaryEmail = emailVal;
+                personalEmail = corpEmailVal || null;
+            } else if (allowedDomains.has(corpDomain)) {
+                primaryEmail = corpEmailVal;
+                personalEmail = emailVal || null;
+            } else {
                 result.skipped++;
                 continue;
             }
 
-            const emailLower = eu.email.toLowerCase();
+            const emailLower = primaryEmail.toLowerCase();
             if (seenEmails.has(emailLower)) {
                 result.skipped++;
                 continue;
@@ -172,8 +186,6 @@ export class EmplannerSyncService {
 
             const existingUserId = emailToUserId.get(emailLower);
 
-            // API field naming is counterintuitive: corporateEmail = personal email
-            const personalEmail = eu.corporateEmail || null;
             const emplannerData = {
                 emplannerUid: eu.id,
                 extraId: eu.extraId,
@@ -226,8 +238,8 @@ export class EmplannerSyncService {
                 result.synced++;
             } else {
                 // Create new user
-                const name = [eu.firstName, eu.lastName].filter(Boolean).join(' ') || eu.email;
-                userCreates.push({ email: eu.email, name, data: emplannerData });
+                const name = [eu.firstName, eu.lastName].filter(Boolean).join(' ') || primaryEmail;
+                userCreates.push({ email: primaryEmail, name, data: emplannerData });
             }
         }
 
@@ -263,7 +275,20 @@ export class EmplannerSyncService {
         const newSpecsToCreate: SpecChange[] = [];
 
         for (const eu of emplannerUsers) {
-            const emailLower = eu.email.toLowerCase();
+            // Re-derive primaryEmail with same logic
+            const emailVal = eu.email || '';
+            const corpEmailVal = eu.corporateEmail || '';
+            const emailDomain = emailVal.split('@')[1]?.toLowerCase() || '';
+            const corpDomain = corpEmailVal.split('@')[1]?.toLowerCase() || '';
+            let primaryEmail = '';
+            if (allowedDomains.has(emailDomain)) {
+                primaryEmail = emailVal;
+            } else if (allowedDomains.has(corpDomain)) {
+                primaryEmail = corpEmailVal;
+            }
+            if (!primaryEmail) continue;
+
+            const emailLower = primaryEmail.toLowerCase();
             const userId = emailToUserId.get(emailLower);
             if (!userId) continue;
 
