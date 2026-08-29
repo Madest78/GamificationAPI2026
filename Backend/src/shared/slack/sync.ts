@@ -15,7 +15,11 @@ export class SlackSyncService {
             return { updated: false };
         }
 
-        const slackUser = await this.slack.getUserByEmail(email);
+        // Try primary email first, then personalEmail
+        let slackUser = await this.slack.getUserByEmail(email);
+        if (!slackUser && user.personalEmail) {
+            slackUser = await this.slack.getUserByEmail(user.personalEmail);
+        }
         if (!slackUser) {
             return { updated: false };
         }
@@ -39,7 +43,7 @@ export class SlackSyncService {
     }
 
     /**
-     * Bulk Slack sync: get all Slack users, match by email, update in batch.
+     * Bulk Slack sync: get all Slack users, match by email OR personalEmail, update in batch.
      * ~2 API calls (Slack paginated) + ~3 DB queries.
      */
     async syncAllUsers(): Promise<{ synced: number; errors: number }> {
@@ -56,18 +60,26 @@ export class SlackSyncService {
         }
         console.log(`[SlackSync] ${emailToSlack.size} Slack users with email`);
 
-        // 3) Fetch all DB users
+        // 3) Fetch all DB users (include personalEmail for matching)
         const dbUsers = await prisma.user.findMany({
-            select: { id: true, email: true, slackId: true, avatarUrl: true },
+            select: { id: true, email: true, personalEmail: true, slackId: true, avatarUrl: true },
         });
         console.log(`[SlackSync] ${dbUsers.length} DB users`);
 
-        // 4) Compute updates in memory
+        // 4) Compute updates in memory — match by email OR personalEmail
         const toUpdate: Array<{ id: string; slackId?: string; avatarUrl?: string }> = [];
+        const usedSlackIds = new Set<string>();
 
         for (const dbUser of dbUsers) {
-            const slackUser = emailToSlack.get(dbUser.email.toLowerCase());
+            // Try matching by primary email first, then by personalEmail
+            const slackUser = emailToSlack.get(dbUser.email.toLowerCase())
+                || (dbUser.personalEmail ? emailToSlack.get(dbUser.personalEmail.toLowerCase()) : null);
+
             if (!slackUser) continue;
+
+            // Skip if this Slack user is already linked to another DB user
+            if (usedSlackIds.has(slackUser.id)) continue;
+            usedSlackIds.add(slackUser.id);
 
             const updates: { slackId?: string; avatarUrl?: string } = {};
 

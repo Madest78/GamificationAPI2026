@@ -32,7 +32,11 @@ export class EmplannerSyncService {
         }
 
         // API field naming is counterintuitive: corporateEmail = personal email
-        const personalEmail = emplannerUser.corporateEmail || null;
+        // But check if it's actually a corporate domain before setting as personalEmail
+        const corpEmail = emplannerUser.corporateEmail || '';
+        const corpDomain = corpEmail.split('@')[1]?.toLowerCase() || '';
+        const allowedDomains = new Set(['docusketch.com', 'emplanner.team']);
+        const personalEmail = corpEmail && !allowedDomains.has(corpDomain) ? corpEmail : null;
 
         const mapping = mapEmplannerTeamsToRoles(
             emplannerUser.memberTeams || [],
@@ -168,10 +172,12 @@ export class EmplannerSyncService {
 
             if (allowedDomains.has(emailDomain)) {
                 primaryEmail = emailVal;
-                personalEmail = corpEmailVal || null;
+                // Only set personalEmail if it's NOT a corporate domain
+                personalEmail = corpEmailVal && !allowedDomains.has(corpDomain) ? corpEmailVal : null;
             } else if (allowedDomains.has(corpDomain)) {
                 primaryEmail = corpEmailVal;
-                personalEmail = emailVal || null;
+                // Only set personalEmail if it's NOT a corporate domain
+                personalEmail = emailVal && !allowedDomains.has(emailDomain) ? emailVal : null;
             } else {
                 result.skipped++;
                 continue;

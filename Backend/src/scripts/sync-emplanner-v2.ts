@@ -90,10 +90,12 @@ async function main() {
 
         if (allowedDomains.has(emailDomain)) {
             primaryEmail = emailVal;
-            personalEmail = corpEmailVal || null;
+            // Only set personalEmail if it's NOT a corporate domain
+            personalEmail = corpEmailVal && !allowedDomains.has(corpDomain) ? corpEmailVal : null;
         } else if (allowedDomains.has(corpDomain)) {
             primaryEmail = corpEmailVal;
-            personalEmail = emailVal || null;
+            // Only set personalEmail if it's NOT a corporate domain
+            personalEmail = emailVal && !allowedDomains.has(emailDomain) ? emailVal : null;
         } else {
             skipped++;
             continue;
