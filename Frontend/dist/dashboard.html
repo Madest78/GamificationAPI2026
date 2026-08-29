@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gamification DS - Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f0f0f; color: #fff; min-height: 100vh; }
+        .header { background: #1a1a2e; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #333; }
+        .header h1 { font-size: 18px; }
+        .user-info { display: flex; align-items: center; gap: 12px; }
+        .user-info img { width: 32px; height: 32px; border-radius: 50%; }
+        .user-info span { color: #888; font-size: 14px; }
+        .btn-logout { background: #333; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; }
+        .btn-logout:hover { background: #444; }
+        .container { max-width: 800px; margin: 32px auto; padding: 0 24px; }
+        .card { background: #1a1a2e; border-radius: 12px; padding: 24px; margin-bottom: 16px; }
+        .card h2 { font-size: 16px; margin-bottom: 16px; color: #aaa; }
+        .field { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #222; }
+        .field:last-child { border-bottom: none; }
+        .field-label { color: #888; font-size: 14px; }
+        .field-value { font-size: 14px; }
+        .badge { display: inline-block; background: #2a2a4a; color: #7c7cff; padding: 4px 10px; border-radius: 12px; font-size: 12px; margin: 2px; }
+        .badge-green { background: #1a3a1a; color: #4caf50; }
+        .teams { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+        .loading { text-align: center; padding: 48px; color: #888; }
+        .error { text-align: center; padding: 48px; color: #ff4444; }
+        .team-block { margin-bottom: 20px; }
+        .team-block:last-child { margin-bottom: 0; }
+        .team-name { font-size: 14px; font-weight: 600; color: #7c7cff; margin-bottom: 10px; }
+        .member-row { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px; margin-bottom: 4px; background: #16162a; }
+        .member-row img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; background: #333; }
+        .member-name { flex: 1; font-size: 14px; }
+        .member-row.leader { background: rgba(255, 193, 7, 0.08); border-left: 3px solid #ffc107; }
+        .leader-badge { display: inline-block; background: #3a2f10; color: #ffc107; padding: 3px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+        .role-badge { display: inline-block; background: #22224a; color: #9d9dff; padding: 3px 8px; border-radius: 10px; font-size: 11px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Gamification DS</h1>
+        <div class="user-info">
+            <img id="avatar" src="" alt="">
+            <span id="name"></span>
+            <button class="btn-logout" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="content" class="loading">Loading profile...</div>
+    </div>
+
+    <script type="module">
+        const API = 'https://gamification-ds.onrender.com';
+        let token = localStorage.getItem('accessToken');
+
+        if (!token) {
+            window.location.href = '/';
+        }
+
+        async function api(path, options = {}) {
+            const res = await fetch(API + path, {
+                ...options,
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json',
+                    ...options.headers,
+                },
+            });
+            if (res.status === 401) {
+                const refreshRes = await fetch(API + '/api/auth/refresh', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ refreshToken: localStorage.getItem('refreshToken') }),
+                });
+                if (refreshRes.ok) {
+                    const data = await refreshRes.json();
+                    token = data.accessToken;
+                    localStorage.setItem('accessToken', data.accessToken);
+                    localStorage.setItem('refreshToken', data.refreshToken);
+                    return api(path, options);
+                }
+                window.location.href = '/';
+                return;
+            }
+            return res.json();
+        }
+
+        function render(user) {
+            document.getElementById('avatar').src = user.avatarUrl || '';
+            document.getElementById('name').textContent = user.name || user.email;
+
+            document.getElementById('content').innerHTML = `
+                <div class="card">
+                    <h2>Profile</h2>
+                    <div class="field"><span class="field-label">Name</span><span class="field-value">${user.name || '-'}</span></div>
+                    <div class="field"><span class="field-label">Email</span><span class="field-value">${user.email}</span></div>
+                    <div class="field"><span class="field-label">City</span><span class="field-value">${user.emplannerCity || '-'}, ${user.emplannerCountry || '-'}</span></div>
+                    <div class="field"><span class="field-label">Contract</span><span class="field-value">${user.extraId || '-'}</span></div>
+                    <div class="field"><span class="field-label">Slack</span><span class="field-value">${user.slackId || '-'}</span></div>
+                </div>
+
+                <div class="card">
+                    <h2>Roles</h2>
+                    <div>${(user.roles || []).map(r => '<span class="badge">' + (r.role?.code || r) + '</span>').join('') || '<span class="badge">MEMBER</span>'}</div>
+                </div>
+
+                <div class="card">
+                    <h2>Specializations</h2>
+                    <div>${(user.specializations || []).map(s => '<span class="badge badge-green">' + (s.specialization?.code || s) + '</span>').join('') || '<span style="color:#555">None assigned</span>'}</div>
+                </div>
+
+                <div id="teams-card" class="card">
+                    <h2>My Teams</h2>
+                    <div id="teams-content"><span style="color:#555">Loading teams...</span></div>
+                </div>
+
+                <div class="card">
+                    <h2>Emplanner Info</h2>
+                    <div class="field"><span class="field-label">Roles</span><span class="field-value">${(user.emplannerRoles || []).join(', ') || '-'}</span></div>
+                    <div class="field"><span class="field-label">Tags</span><span class="field-value">${(user.emplannerTags || []).join(', ') || '-'}</span></div>
+                    <div class="field"><span class="field-label">UTC</span><span class="field-value">${user.emplannerUtc ?? '-'}</span></div>
+                    <div class="field"><span class="field-label">Feedback</span><span class="field-value">${user.emplannerFeedbackUrl ? '<a href="' + user.emplannerFeedbackUrl + '" target="_blank" style="color:#7c7cff">Open</a>' : '-'}</span></div>
+                </div>
+            `;
+        }
+
+        function renderTeams(directory, myId) {
+            const myTeams = directory.filter(t =>
+                t.leaders.some(m => m.id === myId) || t.members.some(m => m.id === myId)
+            );
+
+            if (!myTeams.length) {
+                document.getElementById('teams-content').innerHTML = '<span style="color:#555">No teams assigned</span>';
+                return;
+            }
+
+            document.getElementById('teams-content').innerHTML = myTeams.map(team => {
+                const rows = [...team.leaders, ...team.members].map(m => `
+                    <div class="member-row ${m.isLeader ? 'leader' : ''}">
+                        <img src="${m.avatarUrl || ''}" alt="">
+                        <span class="member-name">${m.name}</span>
+                        ${m.isLeader ? '<span class="leader-badge">TEAM LEAD</span>' : ''}
+                    </div>
+                `).join('');
+                return `<div class="team-block"><div class="team-name">${team.name}</div>${rows}</div>`;
+            }).join('');
+        }
+
+        async function init() {
+            try {
+                const user = await api('/api/users/me');
+                if (user.error) throw new Error(user.error);
+                render(user);
+
+                try {
+                    const directory = await api('/api/teams');
+                    if (Array.isArray(directory)) {
+                        renderTeams(directory, user.id);
+                    } else {
+                        document.getElementById('teams-content').innerHTML = '<span style="color:#555">No teams data</span>';
+                    }
+                } catch (e) {
+                    document.getElementById('teams-content').innerHTML = '<span style="color:#555">Failed to load teams</span>';
+                }
+            } catch (e) {
+                document.getElementById('content').innerHTML = '<div class="error">' + e.message + '</div>';
+            }
+        }
+
+        window.logout = function() {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            window.location.href = '/';
+        };
+
+        init();
+    </script>
+</body>
+</html>
