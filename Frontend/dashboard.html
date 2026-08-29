@@ -111,17 +111,9 @@
                     <div>${(user.specializations || []).map(s => '<span class="badge badge-green">' + (s.specialization?.code || s) + '</span>').join('') || '<span style="color:#555">None assigned</span>'}</div>
                 </div>
 
-                <div id="teams-card" class="card" style="display:none">
-                    <h2>My Team</h2>
-                    <div id="teams-content"></div>
-                </div>
-
-                <div class="card">
-                    <h2>Emplanner Teams</h2>
-                    <div style="margin-bottom:8px;color:#888;font-size:13px">Member:</div>
-                    <div class="teams">${(user.emplannerTeams?.member || []).map(t => '<span class="badge">' + t.name + '</span>').join('') || '<span style="color:#555">-</span>'}</div>
-                    <div style="margin:12px 0 8px;color:#888;font-size:13px">Leader:</div>
-                    <div class="teams">${(user.emplannerTeams?.leader || []).map(t => '<span class="badge badge-green">' + t.name + '</span>').join('') || '<span style="color:#555">-</span>'}</div>
+                <div id="teams-card" class="card">
+                    <h2>My Teams</h2>
+                    <div id="teams-content"><span style="color:#555">Loading teams...</span></div>
                 </div>
 
                 <div class="card">
@@ -139,9 +131,10 @@
                 t.leaders.some(m => m.id === myId) || t.members.some(m => m.id === myId)
             );
 
-            if (!myTeams.length) return;
-
-            document.getElementById('teams-card').style.display = '';
+            if (!myTeams.length) {
+                document.getElementById('teams-content').innerHTML = '<span style="color:#555">No teams assigned</span>';
+                return;
+            }
 
             document.getElementById('teams-content').innerHTML = myTeams.map(team => {
                 const rows = [...team.leaders, ...team.members].map(m => `
@@ -161,9 +154,15 @@
                 if (user.error) throw new Error(user.error);
                 render(user);
 
-                const directory = await api('/api/teams');
-                if (Array.isArray(directory)) {
-                    renderTeams(directory, user.id);
+                try {
+                    const directory = await api('/api/teams');
+                    if (Array.isArray(directory)) {
+                        renderTeams(directory, user.id);
+                    } else {
+                        document.getElementById('teams-content').innerHTML = '<span style="color:#555">No teams data</span>';
+                    }
+                } catch (e) {
+                    document.getElementById('teams-content').innerHTML = '<span style="color:#555">Failed to load teams</span>';
                 }
             } catch (e) {
                 document.getElementById('content').innerHTML = '<div class="error">' + e.message + '</div>';
