@@ -8,7 +8,12 @@ interface EmplannerTeamsJson {
 export interface TeamMemberDto {
     id: string;
     name: string;
-    avatarUrl: string | null;
+    avatarUrl24: string | null;
+    avatarUrl32: string | null;
+    avatarUrl48: string | null;
+    avatarUrl72: string | null;
+    avatarUrl192: string | null;
+    avatarUrl512: string | null;
     isLeader: boolean;
 }
 
@@ -26,7 +31,12 @@ export class TeamsService {
                 id: true,
                 name: true,
                 email: true,
-                avatarUrl: true,
+                avatarUrl24: true,
+                avatarUrl32: true,
+                avatarUrl48: true,
+                avatarUrl72: true,
+                avatarUrl192: true,
+                avatarUrl512: true,
                 emplannerTeams: true,
             },
         });
@@ -38,7 +48,12 @@ export class TeamsService {
             const member = {
                 id: user.id,
                 name: displayName,
-                avatarUrl: user.avatarUrl,
+                avatarUrl24: user.avatarUrl24,
+                avatarUrl32: user.avatarUrl32,
+                avatarUrl48: user.avatarUrl48,
+                avatarUrl72: user.avatarUrl72,
+                avatarUrl192: user.avatarUrl192,
+                avatarUrl512: user.avatarUrl512,
                 isLeader: false,
             };
 

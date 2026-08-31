@@ -11,7 +11,12 @@ const updateProfileSchema = z.object({
     emplannerUid: z.string().nullable().optional(),
     extraId: z.string().regex(/^\d{2}-\d{7}$/).nullable().optional(),
     slackId: z.string().nullable().optional(),
-    avatarUrl: z.string().url().nullable().optional(),
+    avatarUrl24: z.string().url().nullable().optional(),
+    avatarUrl32: z.string().url().nullable().optional(),
+    avatarUrl48: z.string().url().nullable().optional(),
+    avatarUrl72: z.string().url().nullable().optional(),
+    avatarUrl192: z.string().url().nullable().optional(),
+    avatarUrl512: z.string().url().nullable().optional(),
     personalEmail: z.string().email().nullable().optional(),
     emplannerRoles: z.array(z.string()).nullable().optional(),
     emplannerTags: z.array(z.string()).nullable().optional(),
@@ -49,7 +54,7 @@ export function createUserRouter({ userRepo, verifyToken, requireAuth }: UserRou
         }
 
         // Автосинхронизация из Slack если не хватает полей
-        if (!user.slackId || !user.avatarUrl) {
+        if (!user.slackId || !user.avatarUrl192) {
             const email = user.email;
             if (shouldAttemptSync('slack', email)) {
                 try {

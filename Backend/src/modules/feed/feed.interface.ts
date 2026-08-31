@@ -17,7 +17,12 @@ interface FeedItemDto {
     type: 'achievement' | 'kudos';
     userId: string;
     userName: string;
-    userAvatar: string | null;
+    userAvatar24: string | null;
+    userAvatar32: string | null;
+    userAvatar48: string | null;
+    userAvatar72: string | null;
+    userAvatar192: string | null;
+    userAvatar512: string | null;
     data: unknown;
     createdAt: Date;
 }

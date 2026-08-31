@@ -3,7 +3,12 @@ import { z } from 'zod';
 export const createUserSchema = z.object({
     email: z.string().email(),
     name: z.string().optional(),
-    avatarUrl: z.string().optional(),
+    avatarUrl24: z.string().optional(),
+    avatarUrl32: z.string().optional(),
+    avatarUrl48: z.string().optional(),
+    avatarUrl72: z.string().optional(),
+    avatarUrl192: z.string().optional(),
+    avatarUrl512: z.string().optional(),
     googleId: z.string().optional(),
     emplannerUid: z.string().optional(),
     extraId: z.string().regex(/^\d{2}-\d{7}$/).optional(),
@@ -33,7 +38,12 @@ export interface UserDto {
     email: string;
     personalEmail: string | null;
     name: string | null;
-    avatarUrl: string | null;
+    avatarUrl24: string | null;
+    avatarUrl32: string | null;
+    avatarUrl48: string | null;
+    avatarUrl72: string | null;
+    avatarUrl192: string | null;
+    avatarUrl512: string | null;
     emplannerUid: string | null;
     extraId: string | null;
     slackId: string | null;

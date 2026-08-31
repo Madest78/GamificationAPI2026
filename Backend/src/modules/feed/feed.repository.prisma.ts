@@ -45,7 +45,12 @@ export class PrismaFeedRepository implements FeedRepository {
             type: 'achievement' as const,
             userId: a.userId,
             userName: a.user.name || a.user.email,
-            userAvatar: a.user.avatarUrl,
+            userAvatar24: a.user.avatarUrl24,
+            userAvatar32: a.user.avatarUrl32,
+            userAvatar48: a.user.avatarUrl48,
+            userAvatar72: a.user.avatarUrl72,
+            userAvatar192: a.user.avatarUrl192,
+            userAvatar512: a.user.avatarUrl512,
             data: {
                 achievement: a.achievementDef.name,
                 points: a.achievementDef.points,
@@ -72,7 +77,12 @@ export class PrismaFeedRepository implements FeedRepository {
             type: 'kudos' as const,
             userId: k.senderId,
             userName: k.sender.name || k.sender.email,
-            userAvatar: k.sender.avatarUrl,
+            userAvatar24: k.sender.avatarUrl24,
+            userAvatar32: k.sender.avatarUrl32,
+            userAvatar48: k.sender.avatarUrl48,
+            userAvatar72: k.sender.avatarUrl72,
+            userAvatar192: k.sender.avatarUrl192,
+            userAvatar512: k.sender.avatarUrl512,
             data: {
                 receiver: k.receiver.name || k.receiver.email,
                 type: k.kudosType.name,
@@ -92,7 +102,12 @@ export class PrismaFeedRepository implements FeedRepository {
             id: f.following.id,
             name: f.following.name,
             email: f.following.email,
-            avatarUrl: f.following.avatarUrl,
+            avatarUrl24: f.following.avatarUrl24,
+            avatarUrl32: f.following.avatarUrl32,
+            avatarUrl48: f.following.avatarUrl48,
+            avatarUrl72: f.following.avatarUrl72,
+            avatarUrl192: f.following.avatarUrl192,
+            avatarUrl512: f.following.avatarUrl512,
         }));
     }
 
@@ -105,7 +120,12 @@ export class PrismaFeedRepository implements FeedRepository {
             id: f.follower.id,
             name: f.follower.name,
             email: f.follower.email,
-            avatarUrl: f.follower.avatarUrl,
+            avatarUrl24: f.follower.avatarUrl24,
+            avatarUrl32: f.follower.avatarUrl32,
+            avatarUrl48: f.follower.avatarUrl48,
+            avatarUrl72: f.follower.avatarUrl72,
+            avatarUrl192: f.follower.avatarUrl192,
+            avatarUrl512: f.follower.avatarUrl512,
         }));
     }
 }

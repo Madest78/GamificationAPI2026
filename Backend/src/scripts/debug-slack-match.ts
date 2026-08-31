@@ -7,11 +7,11 @@ async function main() {
     const adapter = new SlackAdapter();
     const allSlackUsers = await adapter.getAllUsers();
 
-    const slackByEmail = new Map<string, { id: string; avatar?: string; realName?: string }>();
+    const slackByEmail = new Map<string, { id: string; realName?: string }>();
     for (const su of allSlackUsers) {
         if (su.deleted || su.is_bot) continue;
         const email = su.profile?.email?.toLowerCase();
-        if (email) slackByEmail.set(email, { id: su.id, avatar: su.profile?.image_192, realName: su.profile?.real_name });
+        if (email) slackByEmail.set(email, { id: su.id, realName: su.profile?.real_name });
     }
 
     const dbUsers = await prisma.user.findMany({

@@ -6,11 +6,22 @@ async function main() {
     const adapter = new SlackAdapter();
     const allSlackUsers = await adapter.getAllUsers();
 
-    const slackByEmail = new Map<string, { id: string; name: string; avatar?: string }>();
+    const slackByEmail = new Map<string, { id: string; name: string; avatars: { image_24?: string; image_32?: string; image_48?: string; image_72?: string; image_192?: string; image_512?: string } }>();
     for (const su of allSlackUsers) {
         if (su.deleted || su.is_bot) continue;
         const email = su.profile?.email?.toLowerCase();
-        if (email) slackByEmail.set(email, { id: su.id, name: su.name, avatar: su.profile?.image_192 });
+        if (email) slackByEmail.set(email, {
+            id: su.id,
+            name: su.name,
+            avatars: {
+                image_24: su.profile?.image_24,
+                image_32: su.profile?.image_32,
+                image_48: su.profile?.image_48,
+                image_72: su.profile?.image_72,
+                image_192: su.profile?.image_192,
+                image_512: su.profile?.image_512,
+            },
+        });
     }
     console.log('Active Slack users with email:', slackByEmail.size);
 
@@ -51,7 +62,15 @@ async function main() {
         if (personalMatch && !usedSlackIds.has(personalMatch.id)) {
             await prisma.user.update({
                 where: { id: user.id },
-                data: { slackId: personalMatch.id, avatarUrl: personalMatch.avatar || undefined },
+                data: {
+                    slackId: personalMatch.id,
+                    avatarUrl24: personalMatch.avatars.image_24,
+                    avatarUrl32: personalMatch.avatars.image_32,
+                    avatarUrl48: personalMatch.avatars.image_48,
+                    avatarUrl72: personalMatch.avatars.image_72,
+                    avatarUrl192: personalMatch.avatars.image_192,
+                    avatarUrl512: personalMatch.avatars.image_512,
+                },
             });
             usedSlackIds.add(personalMatch.id);
             updated++;

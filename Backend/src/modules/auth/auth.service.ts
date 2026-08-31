@@ -14,7 +14,6 @@ interface GoogleUserInfo {
     id: string;      // Google userinfo API uses "id", not "sub"
     email: string;
     name?: string;
-    picture?: string;
 }
 
 export class AuthService {
@@ -105,7 +104,6 @@ export class AuthService {
                 user = await this.userRepo.create({
                     email: googleUser.email,
                     name: googleUser.name,
-                    avatarUrl: googleUser.picture,
                     googleId: googleUser.id,
                 });
 
@@ -182,7 +180,7 @@ export class AuthService {
         }
 
         // Автосинхронизация из Slack если не хватает полей
-        if (!user.slackId || !user.avatarUrl) {
+        if (!user.slackId || !user.avatarUrl192) {
             const { shouldAttemptSync, recordSyncSuccess, recordSyncFailure } = await import('@/shared/syncCache.js');
             if (shouldAttemptSync('slack', user.email)) {
                 try {

@@ -17,7 +17,12 @@ model User {
   email     String   @unique
   personalEmail String?  // Gmail or other personal email from Emplanner
   name      String?
-  avatarUrl String?
+  avatarUrl24  String?
+  avatarUrl32  String?
+  avatarUrl48  String?
+  avatarUrl72  String?
+  avatarUrl192 String?
+  avatarUrl512 String?
   googleId  String?  @unique
   emplannerUid String? @unique  // Emplanner internal ID (e.g. "631c58d75d8e0655c04c7cf2")
   extraId  String?  @unique     // Contract number from Emplanner extraId (e.g. "23-0003288")

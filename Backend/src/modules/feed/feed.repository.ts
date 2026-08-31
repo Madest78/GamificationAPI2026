@@ -12,6 +12,6 @@ export interface FeedRepository {
     findKudosByUserIds(userIds: string[], take: number, skip: number): Promise<FeedItemDto[]>;
 
     // Following/Followers lists
-    findFollowingUsers(userId: string): Promise<Array<{ id: string; name: string | null; email: string; avatarUrl: string | null }>>;
-    findFollowerUsers(userId: string): Promise<Array<{ id: string; name: string | null; email: string; avatarUrl: string | null }>>;
+    findFollowingUsers(userId: string): Promise<Array<{ id: string; name: string | null; email: string; avatarUrl24: string | null; avatarUrl32: string | null; avatarUrl48: string | null; avatarUrl72: string | null; avatarUrl192: string | null; avatarUrl512: string | null }>>;
+    findFollowerUsers(userId: string): Promise<Array<{ id: string; name: string | null; email: string; avatarUrl24: string | null; avatarUrl32: string | null; avatarUrl48: string | null; avatarUrl72: string | null; avatarUrl192: string | null; avatarUrl512: string | null }>>;
 }

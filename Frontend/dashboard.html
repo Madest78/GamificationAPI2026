@@ -88,7 +88,7 @@
         }
 
         function render(user) {
-            document.getElementById('avatar').src = user.avatarUrl || '';
+            document.getElementById('avatar').src = user.avatarUrl192 || user.avatarUrl72 || user.avatarUrl48 || '';
             document.getElementById('name').textContent = user.name || user.email;
 
             document.getElementById('content').innerHTML = `
@@ -139,7 +139,7 @@
             document.getElementById('teams-content').innerHTML = myTeams.map(team => {
                 const rows = [...team.leaders, ...team.members].map(m => `
                     <div class="member-row ${m.isLeader ? 'leader' : ''}">
-                        <img src="${m.avatarUrl || ''}" alt="">
+                        <img src="${m.avatarUrl48 || m.avatarUrl72 || m.avatarUrl192 || ''}" alt="">
                         <span class="member-name">${m.name}</span>
                         ${m.isLeader ? '<span class="leader-badge">TEAM LEAD</span>' : ''}
                     </div>
